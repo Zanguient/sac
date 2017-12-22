@@ -1,0 +1,130 @@
+object FrmInformar_Cliente_PDV: TFrmInformar_Cliente_PDV
+  Left = 0
+  Top = 0
+  BorderIcons = [biSystemMenu]
+  BorderStyle = bsSingle
+  Caption = 'Informar Dados do Cliente'
+  ClientHeight = 198
+  ClientWidth = 326
+  Color = clWindow
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  KeyPreview = True
+  OldCreateOrder = False
+  Position = poScreenCenter
+  OnCloseQuery = FormCloseQuery
+  OnCreate = FormCreate
+  OnKeyDown = FormKeyDown
+  OnKeyPress = FormKeyPress
+  PixelsPerInch = 96
+  TextHeight = 13
+  object Label1: TLabel
+    Left = 13
+    Top = 51
+    Width = 32
+    Height = 13
+    Caption = 'Nome'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = [fsBold]
+    ParentFont = False
+  end
+  object Label2: TLabel
+    Left = 13
+    Top = 91
+    Width = 52
+    Height = 13
+    Caption = 'Endere'#231'o'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = [fsBold]
+    ParentFont = False
+  end
+  object Label3: TLabel
+    Left = 13
+    Top = 131
+    Width = 53
+    Height = 13
+    Caption = 'CPF/CNPJ'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = [fsBold]
+    ParentFont = False
+  end
+  object Label4: TLabel
+    Left = 13
+    Top = 13
+    Width = 80
+    Height = 13
+    Caption = 'C'#243'digo Cliente'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = [fsBold]
+    ParentFont = False
+  end
+  object Button1: TButton
+    Left = 127
+    Top = 165
+    Width = 75
+    Height = 25
+    Caption = '&OK'
+    TabOrder = 4
+    OnClick = Button1Click
+  end
+  object EdtNome: TEdit
+    Left = 13
+    Top = 66
+    Width = 225
+    Height = 17
+    BevelInner = bvNone
+    BevelKind = bkFlat
+    BorderStyle = bsNone
+    CharCase = ecUpperCase
+    TabOrder = 1
+  end
+  object EdtEndereco: TEdit
+    Left = 13
+    Top = 106
+    Width = 294
+    Height = 17
+    BevelInner = bvNone
+    BevelKind = bkFlat
+    BorderStyle = bsNone
+    CharCase = ecUpperCase
+    TabOrder = 2
+  end
+  object EdtCPF_CNPJ: TEdit
+    Left = 13
+    Top = 146
+    Width = 113
+    Height = 17
+    BevelInner = bvNone
+    BevelKind = bkFlat
+    BorderStyle = bsNone
+    CharCase = ecUpperCase
+    TabOrder = 3
+  end
+  object EdtCodigo_Cliente: TEdit
+    Left = 13
+    Top = 28
+    Width = 80
+    Height = 17
+    BevelInner = bvNone
+    BevelKind = bkFlat
+    BorderStyle = bsNone
+    CharCase = ecUpperCase
+    ReadOnly = True
+    TabOrder = 0
+  end
+end

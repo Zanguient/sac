@@ -1,0 +1,79 @@
+object FrmRel_Fiscal_Memoria_Faixa_Reducao: TFrmRel_Fiscal_Memoria_Faixa_Reducao
+  Left = 0
+  Top = 0
+  BorderIcons = [biSystemMenu]
+  BorderStyle = bsSingle
+  Caption = 'Mem'#243'ria por faixa de redu'#231#227'o'
+  ClientHeight = 134
+  ClientWidth = 227
+  Color = clWindow
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  KeyPreview = True
+  OldCreateOrder = False
+  Position = poScreenCenter
+  OnCloseQuery = FormCloseQuery
+  OnCreate = FormCreate
+  OnKeyDown = FormKeyDown
+  OnKeyPress = FormKeyPress
+  PixelsPerInch = 96
+  TextHeight = 13
+  object Label7: TLabel
+    Left = 115
+    Top = 36
+    Width = 20
+    Height = 13
+    Caption = 'Fim'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = [fsBold]
+    ParentFont = False
+  end
+  object Label8: TLabel
+    Left = 53
+    Top = 36
+    Width = 31
+    Height = 13
+    Caption = 'Inicio'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = [fsBold]
+    ParentFont = False
+  end
+  object Button1: TButton
+    Left = 71
+    Top = 101
+    Width = 75
+    Height = 25
+    Caption = '&OK'
+    TabOrder = 2
+    OnClick = Button1Click
+  end
+  object EdtInicio: TEdit
+    Left = 53
+    Top = 55
+    Width = 56
+    Height = 17
+    BevelInner = bvNone
+    BevelKind = bkFlat
+    BorderStyle = bsNone
+    TabOrder = 0
+  end
+  object EdtFim: TEdit
+    Left = 115
+    Top = 55
+    Width = 56
+    Height = 17
+    BevelInner = bvNone
+    BevelKind = bkFlat
+    BorderStyle = bsNone
+    TabOrder = 1
+  end
+end

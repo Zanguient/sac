@@ -1,0 +1,107 @@
+object FrmChama_Cliente_PDV: TFrmChama_Cliente_PDV
+  Left = 0
+  Top = 0
+  BorderIcons = [biSystemMenu]
+  BorderStyle = bsSingle
+  Caption = 'Consulta Clientes'
+  ClientHeight = 134
+  ClientWidth = 392
+  Color = clWindow
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  KeyPreview = True
+  OldCreateOrder = False
+  Position = poScreenCenter
+  OnCloseQuery = FormCloseQuery
+  OnCreate = FormCreate
+  OnKeyDown = FormKeyDown
+  OnKeyPress = FormKeyPress
+  PixelsPerInch = 96
+  TextHeight = 13
+  object Label6: TLabel
+    Left = 8
+    Top = 16
+    Width = 39
+    Height = 13
+    Caption = 'Cliente'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = [fsBold]
+    ParentFont = False
+  end
+  object Button1: TButton
+    Left = 168
+    Top = 81
+    Width = 75
+    Height = 25
+    Caption = '&OK'
+    TabOrder = 0
+    OnClick = Button1Click
+  end
+  object EdtCodigo_Cliente: TEdit
+    Left = 8
+    Top = 35
+    Width = 61
+    Height = 17
+    BevelInner = bvNone
+    BevelKind = bkFlat
+    BorderStyle = bsNone
+    CharCase = ecUpperCase
+    Color = clCream
+    ReadOnly = True
+    TabOrder = 1
+  end
+  object EdtCliente: TEdit
+    Left = 68
+    Top = 35
+    Width = 233
+    Height = 17
+    BevelInner = bvNone
+    BevelKind = bkFlat
+    BorderStyle = bsNone
+    CharCase = ecUpperCase
+    ReadOnly = True
+    TabOrder = 2
+  end
+  object EdtCPF: TEdit
+    Left = 300
+    Top = 35
+    Width = 84
+    Height = 17
+    BevelInner = bvNone
+    BevelKind = bkFlat
+    BorderStyle = bsNone
+    CharCase = ecUpperCase
+    ReadOnly = True
+    TabOrder = 3
+  end
+  object EdtEndereco: TEdit
+    Left = 8
+    Top = 58
+    Width = 293
+    Height = 17
+    BevelInner = bvNone
+    BevelKind = bkFlat
+    BorderStyle = bsNone
+    CharCase = ecUpperCase
+    ReadOnly = True
+    TabOrder = 4
+  end
+  object EdtN: TEdit
+    Left = 300
+    Top = 58
+    Width = 39
+    Height = 17
+    BevelInner = bvNone
+    BevelKind = bkFlat
+    BorderStyle = bsNone
+    CharCase = ecUpperCase
+    ReadOnly = True
+    TabOrder = 5
+  end
+end

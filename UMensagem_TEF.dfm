@@ -1,0 +1,40 @@
+object FrmMensagem_TEF: TFrmMensagem_TEF
+  Left = 0
+  Top = 0
+  BorderIcons = []
+  BorderStyle = bsSingle
+  ClientHeight = 86
+  ClientWidth = 820
+  Color = clWindow
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  FormStyle = fsMDIChild
+  KeyPreview = True
+  OldCreateOrder = False
+  Position = poScreenCenter
+  Visible = True
+  OnCloseQuery = FormCloseQuery
+  PixelsPerInch = 96
+  TextHeight = 13
+  object LblMensagem: TLabel
+    Left = 0
+    Top = 24
+    Width = 817
+    Height = 33
+    Alignment = taCenter
+    AutoSize = False
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -27
+    Font.Name = 'Tahoma'
+    Font.Style = [fsBold]
+    ParentFont = False
+  end
+  object Timer1: TTimer
+    Left = 400
+    Top = 40
+  end
+end
