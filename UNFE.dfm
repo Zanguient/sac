@@ -32,7 +32,7 @@ object FrmNFE: TFrmNFE
     Width = 814
     Height = 467
     Cursor = crHandPoint
-    ActivePage = TabSheet1
+    ActivePage = TabSheet6
     Align = alClient
     Style = tsFlatButtons
     TabOrder = 0
@@ -396,7 +396,7 @@ object FrmNFE: TFrmNFE
         Width = 808
         Height = 301
         Cursor = crHandPoint
-        ActivePage = TabSheet13
+        ActivePage = TabSheet12
         Style = tsFlatButtons
         TabOrder = 15
         object TabSheet12: TTabSheet
@@ -643,6 +643,8 @@ object FrmNFE: TFrmNFE
         object TabSheet13: TTabSheet
           Caption = 'Informa'#231#245'es do(s) Pedido(s)'
           ImageIndex = 1
+          ExplicitLeft = -28
+          ExplicitTop = 30
           object Label9: TLabel
             Left = -1
             Top = -1
@@ -656,38 +658,12 @@ object FrmNFE: TFrmNFE
             Font.Style = [fsBold]
             ParentFont = False
           end
-          object Label12: TLabel
-            Left = 619
-            Top = 37
-            Width = 62
-            Height = 13
-            Caption = 'Prim. Venc.'
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clWindowText
-            Font.Height = -11
-            Font.Name = 'Tahoma'
-            Font.Style = [fsBold]
-            ParentFont = False
-          end
           object Label13: TLabel
-            Left = 687
-            Top = 37
+            Left = 713
+            Top = 27
             Width = 51
             Height = 13
             Caption = 'Obs. Fisc.'
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clWindowText
-            Font.Height = -11
-            Font.Name = 'Tahoma'
-            Font.Style = [fsBold]
-            ParentFont = False
-          end
-          object Label16: TLabel
-            Left = 421
-            Top = 38
-            Width = 58
-            Height = 13
-            Caption = 'Cond. Pag.'
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -733,24 +709,9 @@ object FrmNFE: TFrmNFE
             Font.Style = [fsBold]
             ParentFont = False
           end
-          object MEdtData_Primeiro_Vencimento: TMaskEdit
-            Left = 619
-            Top = 53
-            Width = 69
-            Height = 17
-            BevelInner = bvNone
-            BevelOuter = bvRaised
-            BevelKind = bkFlat
-            BorderStyle = bsNone
-            EditMask = '!99/99/9999;1;_'
-            MaxLength = 10
-            TabOrder = 4
-            Text = '  /  /    '
-            OnEnter = MEdtData_EmissaoEnter
-          end
           object EdtCodigo_Obs_Fiscal: TEdit
-            Left = 687
-            Top = 53
+            Left = 713
+            Top = 46
             Width = 62
             Height = 17
             Hint = 'Pressione F3 para consultar'
@@ -761,46 +722,11 @@ object FrmNFE: TFrmNFE
             Color = clMenu
             ParentShowHint = False
             ShowHint = True
-            TabOrder = 5
+            TabOrder = 2
             OnDblClick = EdtCodigo_Obs_FiscalDblClick
             OnExit = EdtCodigo_Obs_FiscalExit
             OnKeyDown = EdtCodigo_Obs_FiscalKeyDown
             OnKeyPress = EdtCodigo_CFOPKeyPress
-          end
-          object EdtCodigo_Condicao_Pagamento: TEdit
-            Left = 421
-            Top = 53
-            Width = 62
-            Height = 17
-            Hint = 'Pressione F3 para consultar'
-            BevelEdges = [beLeft, beTop, beBottom]
-            BevelInner = bvNone
-            BevelKind = bkFlat
-            BorderStyle = bsNone
-            CharCase = ecUpperCase
-            Color = clMenu
-            ParentShowHint = False
-            ReadOnly = True
-            ShowHint = True
-            TabOrder = 2
-            OnDblClick = EdtCodigo_Condicao_PagamentoDblClick
-            OnExit = EdtCodigo_Condicao_PagamentoExit
-            OnKeyDown = EdtCodigo_Condicao_PagamentoKeyDown
-          end
-          object EdtCondicao_Pagamento: TEdit
-            Left = 483
-            Top = 53
-            Width = 137
-            Height = 17
-            TabStop = False
-            BevelEdges = [beTop, beRight, beBottom]
-            BevelInner = bvNone
-            BevelKind = bkFlat
-            BorderStyle = bsNone
-            CharCase = ecUpperCase
-            ReadOnly = True
-            TabOrder = 3
-            OnKeyPress = EdtCFOPKeyPress
           end
           object MMOPedido: TMemo
             Left = 0
@@ -820,7 +746,7 @@ object FrmNFE: TFrmNFE
             Width = 419
             Height = 199
             DataSource = DataSource4
-            TabOrder = 8
+            TabOrder = 5
             TitleFont.Charset = DEFAULT_CHARSET
             TitleFont.Color = clWindowText
             TitleFont.Height = -11
@@ -880,25 +806,15 @@ object FrmNFE: TFrmNFE
             OptionsImage.Images = DM.ImageList1
             ParentShowHint = False
             ShowHint = True
-            TabOrder = 6
+            TabOrder = 3
             OnClick = BtnGerarParcelaClick
-          end
-          object Button3: TButton
-            Left = 550
-            Top = 125
-            Width = 75
-            Height = 25
-            Caption = 'Add Item'
-            TabOrder = 9
-            Visible = False
-            OnClick = Button3Click
           end
           object Memo1: TMemo
             Left = 216
             Top = 13
             Width = 97
             Height = 55
-            TabOrder = 10
+            TabOrder = 6
             Visible = False
           end
           object MMOCOO: TMemo
@@ -927,9 +843,157 @@ object FrmNFE: TFrmNFE
             OptionsImage.Images = DM.ImageList1
             ParentShowHint = False
             ShowHint = True
-            TabOrder = 7
+            TabOrder = 4
             Visible = False
             OnClick = BtnExcluirParcelaClick
+          end
+          object GroupBox2: TGroupBox
+            Left = 422
+            Top = 6
+            Width = 283
+            Height = 64
+            Caption = 'Informa'#231#245'es do Financeiro'
+            TabOrder = 7
+            object Label12: TLabel
+              Left = 201
+              Top = 21
+              Width = 62
+              Height = 13
+              Caption = 'Prim. Venc.'
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clWindowText
+              Font.Height = -11
+              Font.Name = 'Tahoma'
+              Font.Style = [fsBold]
+              ParentFont = False
+            end
+            object Label16: TLabel
+              Left = 3
+              Top = 21
+              Width = 58
+              Height = 13
+              Caption = 'Cond. Pag.'
+              Font.Charset = DEFAULT_CHARSET
+              Font.Color = clWindowText
+              Font.Height = -11
+              Font.Name = 'Tahoma'
+              Font.Style = [fsBold]
+              ParentFont = False
+            end
+            object MEdtData_Primeiro_Vencimento: TMaskEdit
+              Left = 201
+              Top = 40
+              Width = 69
+              Height = 17
+              BevelInner = bvNone
+              BevelOuter = bvRaised
+              BevelKind = bkFlat
+              BorderStyle = bsNone
+              EditMask = '!99/99/9999;1;_'
+              MaxLength = 10
+              TabOrder = 0
+              Text = '  /  /    '
+              OnEnter = MEdtData_EmissaoEnter
+            end
+            object EdtCodigo_Condicao_Pagamento: TEdit
+              Left = 3
+              Top = 40
+              Width = 62
+              Height = 17
+              Hint = 'Pressione F3 para consultar'
+              BevelEdges = [beLeft, beTop, beBottom]
+              BevelInner = bvNone
+              BevelKind = bkFlat
+              BorderStyle = bsNone
+              CharCase = ecUpperCase
+              Color = clMenu
+              ParentShowHint = False
+              ReadOnly = True
+              ShowHint = True
+              TabOrder = 1
+              OnDblClick = EdtCodigo_Condicao_PagamentoDblClick
+              OnExit = EdtCodigo_Condicao_PagamentoExit
+              OnKeyDown = EdtCodigo_Condicao_PagamentoKeyDown
+            end
+            object EdtCondicao_Pagamento: TEdit
+              Left = 65
+              Top = 40
+              Width = 137
+              Height = 17
+              TabStop = False
+              BevelEdges = [beTop, beRight, beBottom]
+              BevelInner = bvNone
+              BevelKind = bkFlat
+              BorderStyle = bsNone
+              CharCase = ecUpperCase
+              ReadOnly = True
+              TabOrder = 2
+              OnKeyPress = EdtCFOPKeyPress
+            end
+          end
+          object GBInformarPagamento: TGroupBox
+            Left = 557
+            Top = 69
+            Width = 224
+            Height = 165
+            Caption = 'Informar Pagamento NFCe'
+            TabOrder = 8
+            Visible = False
+            object BtnInformar_Pagamento: TButton
+              Left = 3
+              Top = 23
+              Width = 115
+              Height = 25
+              Caption = 'Informar Pagamentos'
+              TabOrder = 0
+              OnClick = BtnInformar_PagamentoClick
+            end
+            object DBGrid2: TDBGrid
+              Left = 3
+              Top = 54
+              Width = 211
+              Height = 103
+              BorderStyle = bsNone
+              DataSource = DM.ds_fechamento_Venda
+              DrawingStyle = gdsGradient
+              Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgConfirmDelete, dgCancelOnExit, dgMultiSelect, dgTitleClick, dgTitleHotTrack]
+              TabOrder = 1
+              TitleFont.Charset = DEFAULT_CHARSET
+              TitleFont.Color = clWindowText
+              TitleFont.Height = -11
+              TitleFont.Name = 'Tahoma'
+              TitleFont.Style = []
+              OnDrawColumnCell = DBGrid1DrawColumnCell
+              Columns = <
+                item
+                  Expanded = False
+                  FieldName = 'Codigo'
+                  Visible = False
+                end
+                item
+                  Expanded = False
+                  FieldName = 'Forma_Pagamento'
+                  Title.Caption = 'Forma de Pagamento'
+                  Width = 131
+                  Visible = True
+                end
+                item
+                  Expanded = False
+                  FieldName = 'Data'
+                  Visible = False
+                end
+                item
+                  Expanded = False
+                  FieldName = 'Valor'
+                  Width = 107
+                  Visible = True
+                end
+                item
+                  Expanded = False
+                  FieldName = 'Tipo_Documento'
+                  Visible = False
+                end>
+            end
           end
         end
       end
@@ -2594,7 +2658,7 @@ object FrmNFE: TFrmNFE
     Left = 864
     Top = 16
     Bitmap = {
-      494C01010A000D00080020002000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010A000D000C0020002000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       00000000000036000000280000008000000060000000010020000000000000C0
       0000000000000000000000000000000000000000000080808000808080008080
       8000808080008080800080808000808080008080800080808000808080008080
@@ -6459,8 +6523,8 @@ object FrmNFE: TFrmNFE
   end
   object DataSource4: TDataSource
     DataSet = ClientDataSet1
-    Left = 816
-    Top = 256
+    Left = 872
+    Top = 168
   end
   object ClientDataSet1: TClientDataSet
     Aggregates = <>
@@ -6468,8 +6532,8 @@ object FrmNFE: TFrmNFE
     Params = <>
     BeforePost = ClientDataSet1BeforePost
     AfterPost = ClientDataSet1AfterPost
-    Left = 848
-    Top = 256
+    Left = 904
+    Top = 168
     object ClientDataSet1NDoc: TStringField
       FieldName = 'NDoc'
     end

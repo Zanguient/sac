@@ -34,7 +34,7 @@ uses
   ACBrMail, ACBrNFeDANFeRLClass, ACBrBase, ACBrDFe, dxSkinMetropolis,
   dxSkinMetropolisDark, dxSkinOffice2013DarkGray, dxSkinOffice2013LightGray,
   dxSkinOffice2013White, cxNavigator, ACBrDANFCeFortesFr, DadosEmissaoNFE,
-  DadosEmissaoNFEItens, DadosEmissaoNFEPagamento;
+  DadosEmissaoNFEItens, DadosEmissaoNFEPagamento, DadosEmissaoNFERecebimento;
 
 type
   TFrmNFE = class(TForm)
@@ -637,19 +637,13 @@ type
     cxGrid1Level1: TcxGridLevel;
     TabSheet13: TTabSheet;
     Label9: TLabel;
-    Label12: TLabel;
     Label13: TLabel;
-    Label16: TLabel;
-    MEdtData_Primeiro_Vencimento: TMaskEdit;
     EdtCodigo_Obs_Fiscal: TEdit;
-    EdtCodigo_Condicao_Pagamento: TEdit;
-    EdtCondicao_Pagamento: TEdit;
     MMOPedido: TMemo;
     BtnConfirmar: TcxButton;
     DBGrid4: TDBGrid;
     BtnGerarParcela: TcxButton;
     BtnAnular: TcxButton;
-    Button3: TButton;
     Memo1: TMemo;
     Label14: TLabel;
     MMOCOO: TMemo;
@@ -660,6 +654,15 @@ type
     LblValor: TLabel;
     lblValorParcelas: TLabel;
     ClientDataSet1DataPagamento: TDateField;
+    GroupBox2: TGroupBox;
+    Label12: TLabel;
+    Label16: TLabel;
+    MEdtData_Primeiro_Vencimento: TMaskEdit;
+    EdtCodigo_Condicao_Pagamento: TEdit;
+    EdtCondicao_Pagamento: TEdit;
+    GBInformarPagamento: TGroupBox;
+    BtnInformar_Pagamento: TButton;
+    DBGrid2: TDBGrid;
     procedure BBtnSalvarClick(Sender: TObject);
     procedure BBtnPesquisarClick(Sender: TObject);
     procedure BBtnFecharClick(Sender: TObject);
@@ -838,7 +841,7 @@ type
     procedure DBGrid3DrawColumnCell(Sender: TObject; const Rect: TRect;
       DataCol: Integer; Column: TColumn; State: TGridDrawState);
     procedure BBtnGerarNFeClick(Sender: TObject);
-    procedure Button3Click(Sender: TObject);
+    procedure BtnInformar_PagamentoClick(Sender: TObject);
     procedure cxGrid1DBTableView1KeyDown(Sender: TObject; var Key: Word;
       Shift: TShiftState);
     procedure cxGrid1DBTableView1DblClick(Sender: TObject);
@@ -887,9 +890,9 @@ type
     oCli: TClienteEntidade;
     oCP: TCondicaoPagamentoEntidade;
     oCPDominio: TCondicaoPagamentoDominio;
-    DadosEmissaoNFE: TDadosEmissaoNFE;
     DadosEmissaoNFEItens: TDadosEmissaoNFEItens;
     DadosEmissaoNFEPagamento: TDadosEmissaoNFEPagamento;
+    Impresso: boolean;
 
     procedure GeraNFe;
 
@@ -934,6 +937,7 @@ type
     procedure salvarFichaEstoque;
     procedure Verifica_Credito_Cliente;
     procedure Atualiza_CFOP;
+    function ImprimeVendaTEF: Boolean;
   public
     ativo, passa, enderec: Boolean;
     valor_compra, pis, cofins, valor_bc_red, valor_bc_acre, valor_bc_red_ipi,
@@ -963,6 +967,10 @@ type
     forma_pagamento, tipo_juro, tipo_pagamento: AnsiString;
     taxa: double;
 
+    DadosEmissaoNFE: TDadosEmissaoNFE;
+    DadosEmissaoNFERecebimento: TDadosEmissaoNFERecebimento;
+
+    ETEF, ValorTEF: AnsiString;
     procedure Verifica_CSOSN;
     procedure Verifica_CST;
   end;
@@ -980,7 +988,8 @@ uses UChama_Fornecedor, UChama_CFOP, UDeclaracao, UChama_Produto, UDM,
   Util.TLog, Modelo.Dominio.NFE.TNFEDominio,
   Modelo.Entidade.estoque.TFichaEstoque, URel_Carne, UStatus_NFE,
   Util.Mensagens,
-  Util.GeradorDeCodigo, UGerar_Documentos, pcnConversaoNFe;
+  Util.GeradorDeCodigo, UGerar_Documentos, pcnConversaoNFe,
+  UFechamento_Venda_PDV, UMensagem_Erro_Impressora_TEF;
 {$R *.dfm}
 { TFrmPadrao }
 
@@ -1009,6 +1018,70 @@ begin
   except
     on E: Exception do
       TLog.Error(Self.ClassName + ' - Atualiza_Produto - ' + E.Message);
+  end;
+end;
+
+function TFrmNFE.ImprimeVendaTEF: Boolean;
+begin
+  try
+    Impresso := false;
+    den_op:= 'CC';
+    Tipo_Rel:= 1;
+    while not Impresso do
+    begin
+      //TLog.Debug('Vai abrir janela para mostrar mensagem: Imprimindo Cupom TEF.');
+      //Application.CreateForm(TFrmMensagem_TEF, FrmMensagem_TEF);
+      //FrmMensagem_TEF.Show;
+      //TLog.Debug('Abriu janela para mostrar mensagem: Imprimindo Cupom TEF.');
+      if not ImprimeTransacaoTEF(1, 2, ValorTEF, '', '') then
+      begin
+        //chama o form da mensagem
+        Application.CreateForm(TFrmMensagem_Erro_Impressora_TEF, FrmMensagem_Erro_Impressora_TEF);
+        FrmMensagem_Erro_Impressora_TEF.ShowModal;
+        if (FrmMensagem_Erro_Impressora_TEF.confirma = false) then
+        begin
+          Result := false;
+          NaoConfirmaTransacao;
+          ApagaArquivosTEF;
+          DeleteFile(ArqTemp);
+          //Deleta_Bandeira_Pendente;
+          Impresso := true;
+          Aberto:= 0;
+        end
+        else
+        begin
+          BlockInput(true);
+          TLog.Debug('Bloqueou teclado/mouse para imprimir o Relatório Gerencial.');
+          Result := false;
+          Impresso := false;
+          den_op:= 'RG';
+          Tipo_Rel:= 1;
+          //Aberto:= 1;
+        end;
+      end
+      else
+      begin
+        ConfirmaTransacao;
+        ApagaArquivosTEF;
+        //Deleta_Bandeira_Pendente;
+        DeleteFile(ArqTemp);
+        BlockInput(false);
+        TLog.Debug('Desbloqueou mouse e teclado.');
+        Aberto:= 0;
+        Result := true;
+        Impresso := true;
+
+//        Coleta_Dados_R06;
+
+//        R06.Inserir_Outros(R06);
+        //R06.Inserir_Outros_Aux(R06);
+      end;
+    end;
+  except on E:Exception do
+  begin
+    TLog.Error('Erro em ImprimeVendaTEF: '+e.Message);
+  end;
+
   end;
 end;
 
@@ -2147,17 +2220,21 @@ begin
   Atualiza_Status_OS;
 end;
 
-procedure TFrmNFE.Button3Click(Sender: TObject);
+procedure TFrmNFE.BtnInformar_PagamentoClick(Sender: TObject);
 begin
   // Atualiza_Status_OS;
-  ClientDataSet1.Append;
-  ClientDataSet1NDoc.Value := '1';
-  ClientDataSet1Data.Value := date;
-  ClientDataSet1Valor.Value := 50;
+  //ClientDataSet1.Append;
+  //ClientDataSet1NDoc.Value := '1';
+  //ClientDataSet1Data.Value := date;
+  //ClientDataSet1Valor.Value := 50;
   // ClientDataSet1.Append;
   // ClientDataSet1.ApplyUpdates(0);
   // ClientDataSet1.close;
   // ClientDataSet1.Open;
+  TLog.Debug('Clicou no botão Informar Pagamentos.');
+  Application.CreateForm(TFrmFechamento_Venda_PDV, FrmFechamento_Venda_PDV);
+  Centraliza_Form(FrmFechamento_Venda_PDV);
+  FrmFechamento_Venda_PDV.Show;
 
 end;
 
@@ -2173,10 +2250,51 @@ begin
 end;
 
 procedure TFrmNFE.BBtnImprimir_NFeClick(Sender: TObject);
+var
+  i: integer;
+  TemAlerta: boolean;
+  StatusImpressora, TentaAtivar: Boolean;
 begin
   try
+    ETEF:= 'NÃO';
+    for i := 0 to DadosEmissaoNFE.Recebimentos.Count-1 do
+    begin
+      if (DadosEmissaoNFE.Recebimentos.Items[i].PosOuTEF = 'SIM') then
+      begin
+        ETEF:= 'SIM';
+        ValorTEF:= FloatToStr(DadosEmissaoNFE.Recebimentos.Items[i].ValorRecebimento);
+      end;
+    end;
+
     dm.ACBrNFe1.NotasFiscais.Imprimir;
     dm.ACBrNFe1.NotasFiscais.ImprimirPDF;
+
+    if (ETEF = 'SIM') then
+    begin
+      TentaAtivar:= false;
+      while not TentaAtivar do
+      begin
+        try
+          dm.ACBrPosPrinter1.Ativo:= true;
+          TentaAtivar:= true;
+        except
+          TentaAtivar:= False;
+        end;
+      end;
+    end;
+
+    //Se for TEF, tem que ativar a porta da impressora não fiscal. Fica em loop até conseguir ativar.
+    if (ETEF = 'SIM') then
+    begin
+      StatusImpressora:= false;
+      while not StatusImpressora do
+      begin
+        Verifica_Status_Impressora_NF(StatusImpressora, porta_ecf);
+        if (StatusImpressora = true) then
+            ImprimeVendaTEF;
+      end;
+    end;
+
   except
     on E: Exception do
       TLog.Error(Self.ClassName + ' - BBtnImprimir_NFeClick - ' + E.Message);
@@ -2219,6 +2337,7 @@ begin
     RGTipo_Operacao.ItemIndex := 1;
     CMBTipo_Nota.ItemIndex := -1;
     CmbForma_Pagamento.ItemIndex := 0;
+    GBInformarPagamento.Visible:= false;
     qryitens_nf.Close;
     MEdtData_Emissao.Text := DateToStr(date);
     FDataEmissao := StrToDateTime(FormatDateTime('dd/mm/yyyy hh:mm', now));
@@ -2248,6 +2367,8 @@ begin
       BtnExcluirParcela.Enabled := false
     end;
 
+    DadosEmissaoNFE:= TDadosEmissaoNFE.Create;
+    DadosEmissaoNFERecebimento:= TDadosEmissaoNFERecebimento.Create;
     // oLF:= TLancamentoFinanceiroEntidade.Create;
     // oPLF:= TParcelasLancamentoFinanceiroEntidade.Create;
     // oCli:= TCliente.Create;
@@ -2761,23 +2882,58 @@ end;
 
 procedure TFrmNFE.CMBTipo_NotaChange(Sender: TObject);
 begin
+  //Ao escolher o tipo da operação, é verificado se já foi emitida a NFCe ou a NFe para o pedido.
   if (CMBTipo_Nota.ItemIndex = 0) then
   begin
+    if (qrypedido_pendenteTipoVenda.AsString = 'NFE') then
+    begin
+      Application.MessageBox('Já foi emitida a NFe para este pedido, mas ainda não foi emitida a NFCe.', 'NFe já emitida.', mb_ok+MB_ICONQUESTION);
+      CMBTipo_Nota.ItemIndex:= 1;
+      EdtModelo.Text:= '65';
+      dm.ACBrNFe1.Configuracoes.Geral.ModeloDF:= moNFCe;
+      dm.ACBrNFe1.DANFE.ImprimeEmUmaLinha:= true;
+      dm.ACBrNFe1.DANFE:= dm.ACBrNFeDANFCeFortes1;
+      RGFrete.ItemIndex:= 3;
+      BtnInformar_Pagamento.Visible:= true;
+      EdtN_Nota_Fiscal.Text:= IntToStr(Gera_N_NFCe);
+      GBInformarPagamento.Visible:= true;
+      exit;
+    end;
+
     EdtModelo.Text:= '55';
     dm.ACBrNFe1.Configuracoes.Geral.ModeloDF:= moNFe;
     dm.ACBrNFe1.DANFE.ImprimeEmUmaLinha:= false;
     dm.ACBrNFe1.DANFE:= dm.ACBrNFeDANFeRL1;
     RGFrete.ItemIndex:= 0;
+    BtnInformar_Pagamento.Visible:= false;
     EdtN_Nota_Fiscal.Text:= IntToStr(Gera_N_NFe);
+    GBInformarPagamento.Visible:= false;
   end
   else
   begin
+    if (qrypedido_pendenteTipoVenda.AsString = 'NFCE') then
+    begin
+      Application.MessageBox('Já foi emitida a NFCe para este pedido, mas ainda não foi emitida a NFe.', 'NFCe já emitida.', mb_ok+MB_ICONQUESTION);
+      CMBTipo_Nota.ItemIndex:= 0;
+      EdtModelo.Text:= '55';
+      dm.ACBrNFe1.Configuracoes.Geral.ModeloDF:= moNFe;
+      dm.ACBrNFe1.DANFE.ImprimeEmUmaLinha:= false;
+      dm.ACBrNFe1.DANFE:= dm.ACBrNFeDANFeRL1;
+      RGFrete.ItemIndex:= 0;
+      BtnInformar_Pagamento.Visible:= false;
+      EdtN_Nota_Fiscal.Text:= IntToStr(Gera_N_NFe);
+      GBInformarPagamento.Visible:= false;
+      exit;
+    end;
+
     EdtModelo.Text:= '65';
     dm.ACBrNFe1.Configuracoes.Geral.ModeloDF:= moNFCe;
     dm.ACBrNFe1.DANFE.ImprimeEmUmaLinha:= true;
     dm.ACBrNFe1.DANFE:= dm.ACBrNFeDANFCeFortes1;
     RGFrete.ItemIndex:= 3;
+    BtnInformar_Pagamento.Visible:= true;
     EdtN_Nota_Fiscal.Text:= IntToStr(Gera_N_NFCe);
+    GBInformarPagamento.Visible:= true;
   end;
 end;
 
@@ -4755,6 +4911,7 @@ begin
     qryitens_nf.Close;
     qrypedido_pendente.Close;
     CMBTipo_Nota.ItemIndex := -1;
+    BtnInformar_Pagamento.Visible:= false;
 
     Pega_Certificado_Digital(dm.ACBrNFe1);
     if (impressao_danfe = 'RETRATO') then
@@ -4897,7 +5054,6 @@ var
   TemAlerta: boolean;
 begin
   TLog.Info('--- MÉTODO GERAR NFE---');
-  DadosEmissaoNFE:= TDadosEmissaoNFE.Create;
 
   // Ide.cNF       := ; //Caso não seja preenchido será gerado um número aleatório pelo componente
   DadosEmissaoNFE.CFOP := EdtCFOP.Text;

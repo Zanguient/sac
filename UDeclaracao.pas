@@ -1206,6 +1206,7 @@ function Retorna_Aliquota(AliquotaSemFormatacao: AnsiString): Integer;
 procedure Analisa_Lista_Unidade(var ListaUnidades:TList<AnsiString>; UN: AnsiString);
 function Retorna_Descricao_Unidade(UNSigla: AnsiString): AnsiString;
 // function SetStatementFromQuery(CDS: TClientDataSet): String;
+procedure Atualiza_Dados_Fechamento(var Conexao: TADOConnection; Codigo_Pedido: integer);
 
 var
   R06: URegistro.TR06;
@@ -12826,6 +12827,19 @@ begin
   Memo.Lines.Add('');
 end;
 
+procedure Atualiza_Dados_Fechamento(var Conexao: TADOConnection; Codigo_Pedido: integer);
+begin
+  with dm.qryfechamento_venda, sql do
+  begin
+    close;
+    Connection:= Conexao;
+    clear;
+    add('select * from Fechamento_Venda where Codigo = :Codigo');
+    Parameters.ParamByName('Codigo').Value:= Codigo_Pedido;
+    open;
+  end;
+end;
+
 procedure GerarNFe(var TemAlertas: boolean; MemoAlertas: TMemo; DadosEmissaoNFe: TDadosEmissaoNFE; var ACBrNFe: TACBrNFe; var ACBrDanfeNFe: TACBrNFeDANFeRL; var ACBrDanfeNFCe: TACBrNFeDANFCeFortes);
 var
   data_emissao, data_saida, valaux2, va: AnsiString;
@@ -13439,9 +13453,8 @@ begin
         Prod.uCom := DadosEmissaoNFe.Itens.Items[i].Unidade;
         Prod.qCom := DadosEmissaoNFe.Itens.Items[i].Quantidade;
         Prod.vUnCom := DadosEmissaoNFe.Itens.Items[i].ValorOriginal;
-        Prod.vProd := Calcula_Valor
-          (FloatToStr(DadosEmissaoNFe.Itens.Items[i].Quantidade *
-          DadosEmissaoNFe.Itens.Items[i].ValorOriginal));
+        Prod.vProd := DadosEmissaoNFe.Itens.Items[i].Quantidade *
+          DadosEmissaoNFe.Itens.Items[i].ValorOriginal;
         // qryitens_nfSub_Total.AsFloat;//Calcula_Valor(FloatToStr(qryitens_nfQtde.AsFloat * qryitens_nfValor_Unitario.AsFloat));
         { TODO -oOwner -cGeneral : VERIFDICAR SE PRECISA ALTERAR AQUI }
         Prod.cEANTrib := '';

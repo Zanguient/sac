@@ -19,15 +19,16 @@ object FrmNFE_Cancela: TFrmNFE_Cancela
   OnDestroy = FormDestroy
   PixelsPerInch = 96
   TextHeight = 13
-  object RGEscolha: TRadioGroup
+  object RGTipo: TRadioGroup
     Left = 72
     Top = 8
     Width = 129
     Height = 73
-    Caption = 'Cancela por'
+    Caption = 'Tipo'
     ItemIndex = 0
     Items.Strings = (
-      'Arquivo XML')
+      'NFe'
+      'NFCe')
     TabOrder = 0
   end
   object TlbFerramentas: TToolBar

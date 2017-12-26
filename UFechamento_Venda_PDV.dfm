@@ -26,7 +26,7 @@ object FrmFechamento_Venda_PDV: TFrmFechamento_Venda_PDV
   OnKeyPress = FormKeyPress
   PixelsPerInch = 96
   TextHeight = 13
-  object Label1: TLabel
+  object LblSubTotal: TLabel
     Left = 123
     Top = 91
     Width = 53
@@ -39,7 +39,7 @@ object FrmFechamento_Venda_PDV: TFrmFechamento_Venda_PDV
     Font.Style = [fsBold]
     ParentFont = False
   end
-  object Label2: TLabel
+  object LblDesAcr: TLabel
     Left = 227
     Top = 91
     Width = 58
@@ -108,7 +108,6 @@ object FrmFechamento_Venda_PDV: TFrmFechamento_Venda_PDV
     Height = 25
     Alignment = taCenter
     AutoSize = False
-    Caption = 'FECHAMENTO DO CUPOM FISCAL'
     Color = clNavy
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clRed
@@ -186,10 +185,11 @@ object FrmFechamento_Venda_PDV: TFrmFechamento_Venda_PDV
   object LblFecha: TLabel
     Left = 8
     Top = 8
-    Width = 797
+    Width = 784
     Height = 33
     Alignment = taCenter
-    Caption = 'FECHAMENTO DO CUPOM FISCAL'
+    AutoSize = False
+    Caption = 'FECHAMENTO DA VENDA'
     Color = clNavy
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindow
@@ -201,10 +201,11 @@ object FrmFechamento_Venda_PDV: TFrmFechamento_Venda_PDV
   end
   object Label8: TLabel
     Left = 8
-    Top = 457
+    Top = 458
     Width = 797
     Height = 18
     Alignment = taCenter
+    AutoSize = False
     Caption = '<Enter>-Fechamento do Cupom Fiscal '
     Color = clNavy
     Font.Charset = DEFAULT_CHARSET
@@ -361,7 +362,7 @@ object FrmFechamento_Venda_PDV: TFrmFechamento_Venda_PDV
     Width = 256
     Height = 126
     BorderStyle = bsNone
-    DataSource = ds_fechamento_Venda
+    DataSource = DM.ds_fechamento_Venda
     DrawingStyle = gdsGradient
     Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgConfirmDelete, dgCancelOnExit, dgMultiSelect, dgTitleClick, dgTitleHotTrack]
     TabOrder = 8
@@ -558,100 +559,6 @@ object FrmFechamento_Venda_PDV: TFrmFechamento_Venda_PDV
     TabOrder = 15
     Visible = False
     OnClick = BtnEnviarNFCeClick
-  end
-  object ds_fechamento_Venda: TDataSource
-    DataSet = qryfechamento_venda
-    Left = 312
-    Top = 79
-  end
-  object qryfechamento_venda: TADOQuery
-    Connection = DM.ADOConnectionLocal
-    CursorType = ctStatic
-    Parameters = <>
-    SQL.Strings = (
-      'select * from Fechamento_Venda')
-    Left = 240
-    Top = 79
-    object qryfechamento_vendaCodigo: TIntegerField
-      FieldName = 'Codigo'
-    end
-    object qryfechamento_vendaForma_Pagamento: TStringField
-      FieldName = 'Forma_Pagamento'
-      Size = 50
-    end
-    object qryfechamento_vendaValor: TFloatField
-      FieldName = 'Valor'
-      DisplayFormat = '#0.0,0'
-    end
-    object qryfechamento_vendaData: TDateTimeField
-      FieldName = 'Data'
-    end
-    object qryfechamento_vendaTipo_Documento: TStringField
-      FieldName = 'Tipo_Documento'
-      Size = 15
-    end
-    object qryfechamento_vendaTroco: TFloatField
-      FieldName = 'Troco'
-    end
-    object qryfechamento_vendaCodigo_Empresa: TIntegerField
-      FieldName = 'Codigo_Empresa'
-    end
-    object qryfechamento_vendaStatus: TStringField
-      FieldName = 'Status'
-      Size = 15
-    end
-    object qryfechamento_vendaCodigo_Caixa: TIntegerField
-      FieldName = 'Codigo_Caixa'
-    end
-    object qryfechamento_vendaAcerto: TIntegerField
-      FieldName = 'Acerto'
-    end
-    object qryfechamento_vendaCodigo_Usuario: TIntegerField
-      FieldName = 'Codigo_Usuario'
-    end
-    object qryfechamento_vendaTipo: TStringField
-      FieldName = 'Tipo'
-      Size = 5
-    end
-    object qryfechamento_vendaMovimenta: TIntegerField
-      FieldName = 'Movimenta'
-    end
-    object qryfechamento_vendaN_Documento: TIntegerField
-      FieldName = 'N_Documento'
-    end
-    object qryfechamento_vendaParcela: TIntegerField
-      FieldName = 'Parcela'
-    end
-    object qryfechamento_vendaCodigo_Registro: TAutoIncField
-      FieldName = 'Codigo_Registro'
-      ReadOnly = True
-    end
-    object qryfechamento_vendaDescricao: TStringField
-      FieldName = 'Descricao'
-      Size = 100
-    end
-    object qryfechamento_vendaTransferencia: TIntegerField
-      FieldName = 'Transferencia'
-    end
-    object qryfechamento_vendaCodigo_Conta: TIntegerField
-      FieldName = 'Codigo_Conta'
-    end
-    object qryfechamento_vendaCodigo_Operacao: TIntegerField
-      FieldName = 'Codigo_Operacao'
-    end
-    object qryfechamento_vendaCodigo_Lancamento_Banco: TIntegerField
-      FieldName = 'Codigo_Lancamento_Banco'
-    end
-    object qryfechamento_vendaSaldo_Anterior: TFloatField
-      FieldName = 'Saldo_Anterior'
-    end
-    object qryfechamento_vendaSaldo_Atual: TFloatField
-      FieldName = 'Saldo_Atual'
-    end
-    object qryfechamento_vendaMD5: TStringField
-      FieldName = 'MD5'
-      Size = 50
-    end
   end
   object ADOQuery1: TADOQuery
     Connection = DM.ADOConnection1

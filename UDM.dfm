@@ -7924,10 +7924,9 @@ object DM: TDM
   end
   object ACBrPosPrinter1: TACBrPosPrinter
     Modelo = ppEscDiebold
-    Device.Baud = 115200
     Device.HandShake = hsRTS_CTS
     Device.HardFlow = True
-    Device.ArqLOG = 'D:\ArqLog.log'
+    Device.ArqLOG = 'C:\ArqLog'
     ConfigBarras.MostrarCodigo = False
     ConfigBarras.LarguraLinha = 0
     ConfigBarras.Altura = 0
@@ -7937,8 +7936,102 @@ object DM: TDM
     ConfigQRCode.ErrorLevel = 0
     LinhasEntreCupons = 0
     ControlePorta = True
-    ArqLOG = 'D:\ArqLog.log'
+    ArqLOG = 'C:\ArqLog'
     Left = 760
     Top = 440
+  end
+  object qryfechamento_venda: TADOQuery
+    Connection = ADOConnection1
+    CursorType = ctStatic
+    Parameters = <>
+    SQL.Strings = (
+      'select * from Fechamento_Venda')
+    Left = 408
+    Top = 463
+    object qryfechamento_vendaCodigo: TIntegerField
+      FieldName = 'Codigo'
+    end
+    object qryfechamento_vendaForma_Pagamento: TStringField
+      FieldName = 'Forma_Pagamento'
+      Size = 50
+    end
+    object qryfechamento_vendaValor: TFloatField
+      FieldName = 'Valor'
+      DisplayFormat = '#0.0,0'
+    end
+    object qryfechamento_vendaData: TDateTimeField
+      FieldName = 'Data'
+    end
+    object qryfechamento_vendaTipo_Documento: TStringField
+      FieldName = 'Tipo_Documento'
+      Size = 15
+    end
+    object qryfechamento_vendaTroco: TFloatField
+      FieldName = 'Troco'
+    end
+    object qryfechamento_vendaCodigo_Empresa: TIntegerField
+      FieldName = 'Codigo_Empresa'
+    end
+    object qryfechamento_vendaStatus: TStringField
+      FieldName = 'Status'
+      Size = 15
+    end
+    object qryfechamento_vendaCodigo_Caixa: TIntegerField
+      FieldName = 'Codigo_Caixa'
+    end
+    object qryfechamento_vendaAcerto: TIntegerField
+      FieldName = 'Acerto'
+    end
+    object qryfechamento_vendaCodigo_Usuario: TIntegerField
+      FieldName = 'Codigo_Usuario'
+    end
+    object qryfechamento_vendaTipo: TStringField
+      FieldName = 'Tipo'
+      Size = 5
+    end
+    object qryfechamento_vendaMovimenta: TIntegerField
+      FieldName = 'Movimenta'
+    end
+    object qryfechamento_vendaN_Documento: TIntegerField
+      FieldName = 'N_Documento'
+    end
+    object qryfechamento_vendaParcela: TIntegerField
+      FieldName = 'Parcela'
+    end
+    object qryfechamento_vendaCodigo_Registro: TAutoIncField
+      FieldName = 'Codigo_Registro'
+      ReadOnly = True
+    end
+    object qryfechamento_vendaDescricao: TStringField
+      FieldName = 'Descricao'
+      Size = 100
+    end
+    object qryfechamento_vendaTransferencia: TIntegerField
+      FieldName = 'Transferencia'
+    end
+    object qryfechamento_vendaCodigo_Conta: TIntegerField
+      FieldName = 'Codigo_Conta'
+    end
+    object qryfechamento_vendaCodigo_Operacao: TIntegerField
+      FieldName = 'Codigo_Operacao'
+    end
+    object qryfechamento_vendaCodigo_Lancamento_Banco: TIntegerField
+      FieldName = 'Codigo_Lancamento_Banco'
+    end
+    object qryfechamento_vendaSaldo_Anterior: TFloatField
+      FieldName = 'Saldo_Anterior'
+    end
+    object qryfechamento_vendaSaldo_Atual: TFloatField
+      FieldName = 'Saldo_Atual'
+    end
+    object qryfechamento_vendaMD5: TStringField
+      FieldName = 'MD5'
+      Size = 50
+    end
+  end
+  object ds_fechamento_Venda: TDataSource
+    DataSet = qryfechamento_venda
+    Left = 448
+    Top = 463
   end
 end

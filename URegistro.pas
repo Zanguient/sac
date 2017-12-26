@@ -11710,14 +11710,15 @@ end;
 
 function TFechamento_Venda.GetCodigo: integer;
 begin
-  if (FrmPDV <> nil) then
+  {if (FrmPDV <> nil) then
   begin
     GetCodigo := StrToInt(FrmPDV.LblCodigo.Caption)
   end
   else if (FrmCarrega_Pedido_Caixa <> nil) then
   begin
     GetCodigo := FrmCarrega_Pedido_Caixa.qrycarrega_caixaCodigo.AsInteger;
-  end;
+  end;}
+  GetCodigo := StrToInt(FrmFechamento_Venda_PDV.LblCodigo.Caption);
 end;
 
 function TFechamento_Venda.GetCodigo_Empresa: integer;
@@ -11818,34 +11819,34 @@ end;
 procedure TFechamento_Venda.Inserir(var Registro: TFechamento_Venda);
 begin
   try
-    if not(FrmFechamento_Venda_PDV.qryfechamento_venda.Active) then
-      FrmFechamento_Venda_PDV.qryfechamento_venda.open;
+    if not(dm.qryfechamento_venda.Active) then
+      dm.qryfechamento_venda.open;
 
-    FrmFechamento_Venda_PDV.qryfechamento_venda.Insert;
-    FrmFechamento_Venda_PDV.qryfechamento_venda['Codigo'] := Registro.Codi;
-    FrmFechamento_Venda_PDV.qryfechamento_venda['Codigo_Empresa'] :=
+    dm.qryfechamento_venda.Insert;
+    dm.qryfechamento_venda['Codigo'] := Registro.Codi;
+    dm.qryfechamento_venda['Codigo_Empresa'] :=
       Registro.Codi_Empresa;
-    FrmFechamento_Venda_PDV.qryfechamento_venda['Codigo_Caixa'] :=
+    dm.qryfechamento_venda['Codigo_Caixa'] :=
       Registro.Codi_Caixa;
-    FrmFechamento_Venda_PDV.qryfechamento_venda['Codigo_Usuario'] :=
+    dm.qryfechamento_venda['Codigo_Usuario'] :=
       Registro.Codi_Usuario;
-    FrmFechamento_Venda_PDV.qryfechamento_venda['Forma_Pagamento'] :=
+    dm.qryfechamento_venda['Forma_Pagamento'] :=
       Registro.Form_Pag;
-    FrmFechamento_Venda_PDV.qryfechamento_venda['Valor'] := Registro.Val;
-    FrmFechamento_Venda_PDV.qryfechamento_venda['Troco'] := Registro.Trocoo;
-    FrmFechamento_Venda_PDV.qryfechamento_venda['Data'] := Registro.Dat;
-    FrmFechamento_Venda_PDV.qryfechamento_venda['Tipo_Documento'] :=
+    dm.qryfechamento_venda['Valor'] := Registro.Val;
+    dm.qryfechamento_venda['Troco'] := Registro.Trocoo;
+    dm.qryfechamento_venda['Data'] := Registro.Dat;
+    dm.qryfechamento_venda['Tipo_Documento'] :=
       Registro.Tipo_Doc;
-    FrmFechamento_Venda_PDV.qryfechamento_venda['Status'] := Registro.Statuss;
-    FrmFechamento_Venda_PDV.qryfechamento_venda['Acerto'] := Registro.Acertoo;
-    FrmFechamento_Venda_PDV.qryfechamento_venda['Tipo'] := Registro.Tipoo;
-    FrmFechamento_Venda_PDV.qryfechamento_venda['Movimenta'] :=
+    dm.qryfechamento_venda['Status'] := Registro.Statuss;
+    dm.qryfechamento_venda['Acerto'] := Registro.Acertoo;
+    dm.qryfechamento_venda['Tipo'] := Registro.Tipoo;
+    dm.qryfechamento_venda['Movimenta'] :=
       Registro.Moviment;
-    FrmFechamento_Venda_PDV.qryfechamento_venda['N_Documento'] :=
+    dm.qryfechamento_venda['N_Documento'] :=
       Registro.N_Doc;
-    FrmFechamento_Venda_PDV.qryfechamento_venda['Parcela'] := Registro.Parc;
-    FrmFechamento_Venda_PDV.qryfechamento_venda['MD5'] := GeraMD5([Registro.Tipo_Doc, FloatToStr(Registro.Val)]);
-    FrmFechamento_Venda_PDV.qryfechamento_venda.Post;
+    dm.qryfechamento_venda['Parcela'] := Registro.Parc;
+    dm.qryfechamento_venda['MD5'] := GeraMD5([Registro.Tipo_Doc, FloatToStr(Registro.Val)]);
+    dm.qryfechamento_venda.Post;
 
     // FrmFechamento_Venda_PDV.qryfechamento_venda.SaveToFile(Local_Arquivo(4), dfXMLUTF8);
 

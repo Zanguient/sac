@@ -9,7 +9,7 @@ uses
 
 type
   TFrmNFE_Cancela = class(TForm)
-    RGEscolha: TRadioGroup;
+    RGTipo: TRadioGroup;
     ImgImagens_Comandos: TImageList;
     TlbFerramentas: TToolBar;
     BBtnConsulta: TToolButton;
@@ -65,7 +65,11 @@ begin
       Connection := dm.ADOConnection1;
       clear;
       add('update Pedido set Status = :Status');
-      add('where Chave_NFe = :Chave_NFe');
+      if (RGTipo.ItemIndex=0) then
+        add('where Chave_NFe = :Chave_NFe')
+      else
+        add('where Chave_NFCe = :Chave_NFe');
+
       Parameters.ParamByName('Status').Value := 'CANCELADO';
       Parameters.ParamByName('Chave_NFe').Value := Chave;
       ExecSQL;
@@ -77,16 +81,8 @@ end;
 
 procedure TFrmNFE_Cancela.BBtnConsultaClick(Sender: TObject);
 begin
-  if (RGEscolha.ItemIndex = 0) then
-  begin
-    Cancela_XML;
-    close;
-  end
-  else
-  begin
-    Cancela_XML;
-    close;
-  end;
+  Cancela_XML;
+  close;
 end;
 
 procedure TFrmNFE_Cancela.BBtnFecharClick(Sender: TObject);
@@ -133,7 +129,10 @@ begin
       add('select IP.Codigo_Produto, IP.Qtde, IP.Qtde_Estoque_Atual, Pro.Estoque, Pro.Volume, Pro.Valor_Compra as Valor_Compra_Atual from Itens_Pedido IP');
       Add('left join Pedido P on (IP.Codigo = P.Codigo)');
       Add('left join Produto Pro on (IP.Codigo_Produto = Pro.Codigo)');
-      add('where P.Chave_NFe = :Chave_NFe');
+      if (RGTipo.ItemIndex=0) then
+        add('where P.Chave_NFe = :Chave_NFe')
+      else
+        add('where P.Chave_NFCe = :Chave_NFe');
       Parameters.ParamByName('Chave_NFe').Value := ChaveNFe;
       Open;
 
@@ -243,9 +242,9 @@ end;
 
 procedure TFrmNFE_Cancela.FormCreate(Sender: TObject);
 begin
-  Pega_Certificado_Digital(dm.ACBrNFe1);
-  dm.ACBrNFe1.Configuracoes.WebServices.UF:= uf;
-  FNFEDominio := TNFEDominio.Create(dm.ADOConnection1);
+  //Pega_Certificado_Digital(dm.ACBrNFe1);
+  //dm.ACBrNFe1.Configuracoes.WebServices.UF:= uf;
+  //FNFEDominio := TNFEDominio.Create(dm.ADOConnection1);
 end;
 
 procedure TFrmNFE_Cancela.FormDestroy(Sender: TObject);

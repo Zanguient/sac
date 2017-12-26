@@ -18,9 +18,9 @@ uses
 
 type
   TFrmFechamento_Venda_PDV = class(TForm)
-    Label1: TLabel;
+    LblSubTotal: TLabel;
     EdtSub_Total: TEdit;
-    Label2: TLabel;
+    LblDesAcr: TLabel;
     EdtDesconto: TEdit;
     Label3: TLabel;
     EdtTotal_Venda: TEdit;
@@ -39,27 +39,10 @@ type
     LblN_Pedido: TLabel;
     Label7: TLabel;
     EdtForma_Pagamento: TEdit;
-    ds_fechamento_Venda: TDataSource;
-    qryfechamento_venda: TADOQuery;
-    qryfechamento_vendaCodigo: TIntegerField;
-    qryfechamento_vendaForma_Pagamento: TStringField;
-    qryfechamento_vendaValor: TFloatField;
-    qryfechamento_vendaData: TDateTimeField;
-    qryfechamento_vendaTipo_Documento: TStringField;
     LblCodigo: TLabel;
     Shape7: TShape;
     LblHnde: TLabel;
     LblFecha: TLabel;
-    qryfechamento_vendaTroco: TFloatField;
-    qryfechamento_vendaCodigo_Empresa: TIntegerField;
-    qryfechamento_vendaStatus: TStringField;
-    qryfechamento_vendaCodigo_Caixa: TIntegerField;
-    qryfechamento_vendaAcerto: TIntegerField;
-    qryfechamento_vendaCodigo_Usuario: TIntegerField;
-    qryfechamento_vendaTipo: TStringField;
-    qryfechamento_vendaMovimenta: TIntegerField;
-    qryfechamento_vendaN_Documento: TIntegerField;
-    qryfechamento_vendaParcela: TIntegerField;
     ADOQuery1: TADOQuery;
     ADOQuery1N_Documento: TIntegerField;
     ADOQuery1Data_Vencimento: TDateTimeField;
@@ -161,15 +144,6 @@ type
     qryitens_vendaValor_Compra_Nota: TFloatField;
     qryitens_vendaFicha_Estoque_Codigo: TIntegerField;
     ACBrEnterTab1: TACBrEnterTab;
-    qryfechamento_vendaCodigo_Registro: TAutoIncField;
-    qryfechamento_vendaDescricao: TStringField;
-    qryfechamento_vendaTransferencia: TIntegerField;
-    qryfechamento_vendaCodigo_Conta: TIntegerField;
-    qryfechamento_vendaCodigo_Operacao: TIntegerField;
-    qryfechamento_vendaCodigo_Lancamento_Banco: TIntegerField;
-    qryfechamento_vendaSaldo_Anterior: TFloatField;
-    qryfechamento_vendaSaldo_Atual: TFloatField;
-    qryfechamento_vendaMD5: TStringField;
     MemoNFCe: TMemo;
     rs: TRSPrinter;
     cbVisualizarDANFE: TCheckBox;
@@ -275,7 +249,6 @@ type
     procedure Limpa_Local;
     procedure Cancela_Registro_Cupom;
     procedure Calcula_Total_Faltando;
-    procedure Atualiza_Dados_Fechamento;
     procedure Grava_Forma_Pagamento;
     procedure Calcula_Imposto_Lei;
     function salvarFichaEstoque(COO : string): Boolean;
@@ -575,7 +548,7 @@ begin
   Inicializa_Dados_Principais_Movimentacao(6,dm.qryitens_venda);
   Inicializa_Dados_Principais_Movimentacao(7,dm.qryr05);
   Inicializa_Dados_Principais_Movimentacao(9,dm.qrycontrola_codigo);  //9 ou 17
-  Inicializa_Dados_Principais_Movimentacao(10,qryfechamento_venda);
+  Inicializa_Dados_Principais_Movimentacao(10,dm.qryfechamento_venda);
   Inicializa_Dados_Principais_Movimentacao(11,dm.qryr04);
   Inicializa_Dados_Principais_Movimentacao(12,dm.qryr07);
   Inicializa_Dados_Principais_Movimentacao(13,dm.qryR06);
@@ -641,34 +614,31 @@ begin
   end;
 end;
 
-procedure TFrmFechamento_Venda_PDV.Atualiza_Dados_Fechamento;
-begin
-  with qryfechamento_venda, sql do
-  begin
-    close;
-    Connection:= FrmPDV.Conexao;
-    clear;
-    add('select * from Fechamento_Venda where Codigo = :Codigo');
-    Parameters.ParamByName('Codigo').Value:= StrToInt(LblCodigo.Caption);
-    open;
-  end;
-end;
-
 procedure TFrmFechamento_Venda_PDV.Insere_Dados;
 begin
-  Fechamento_Venda.Salva_Banco(Fechamento_Venda, FrmPDV.Conexao);
+  TLog.Info('--- MÉTODO Insere_Dados ---');
+  if (FrmPDV <> nil) then
+    Fechamento_Venda.Salva_Banco(Fechamento_Venda, FrmPDV.Conexao)
+  else
+    Fechamento_Venda.Salva_Banco(Fechamento_Venda, dm.ADOConnection1);
+
   TLog.Debug('Inseriu condição de pagamento.');
   //Coleta_Dados_R07;
   //R07.Inserir(R07);
 
-  Atualiza_Dados_Fechamento;
+  if (FrmPDV <> nil) then
+    Atualiza_Dados_Fechamento(FrmPDV.Conexao, StrToInt(LblCodigo.Caption))
+  else if (FrmNFE <> nil) then
+    Atualiza_Dados_Fechamento(dm.ADOConnection1, StrToInt(LblCodigo.Caption));
   TLog.Debug('Atualizou condição de pagamento.');
+
   DBGrid1.Refresh;
   TLog.Debug('Refresh na grade de condição de pagamento.');
 
   TLog.Debug('Vai preencher o objeto DadosEmissaoNFERecebimento.');
   if (FrmPDV <> nil) then
   begin
+    TLog.Debug('FrmPDV aberto.');
     FrmPDV.DadosEmissaoNFERecebimento:= TDadosEmissaoNFERecebimento.Create;
     FrmPDV.DadosEmissaoNFERecebimento.TipoRecebimento:= EChqueTipoPagamento;
     FrmPDV.DadosEmissaoNFERecebimento.ValorRecebimento:= StrToFloat(UDeclaracao.valor_pag);
@@ -678,11 +648,20 @@ begin
     FrmPDV.DadosEmissaoNFERecebimento.CNPJ_Operadora:= CNPJOperadora;
     FrmPDV.DadosEmissaoNFE.Recebimentos.Add(FrmPDV.DadosEmissaoNFERecebimento);
   end
-  else
+  else if (FrmNFE <> nil) then
   begin
-
+    TLog.Debug('FrmNFE aberto.');
+    FrmNFE.DadosEmissaoNFERecebimento:= TDadosEmissaoNFERecebimento.Create;
+    FrmNFE.DadosEmissaoNFERecebimento.TipoRecebimento:= EChqueTipoPagamento;
+    FrmNFE.DadosEmissaoNFERecebimento.ValorRecebimento:= StrToFloat(UDeclaracao.valor_pag);
+    FrmNFE.DadosEmissaoNFERecebimento.PosOuTEF:= ETEF;
+    FrmNFE.DadosEmissaoNFERecebimento.NAut:= pNSU;
+    FrmNFE.DadosEmissaoNFERecebimento.NomeRede:= pNomeRede;
+    FrmNFE.DadosEmissaoNFERecebimento.CNPJ_Operadora:= CNPJOperadora;
+    FrmNFE.DadosEmissaoNFE.Recebimentos.Add(FrmNFE.DadosEmissaoNFERecebimento);
   end;
   TLog.Debug('Preencheu o objeto DadosEmissaoNFERecebimento.');
+  TLog.Info('--- FIM MÉTODO Insere_Dados ---');
 end;
 
 function TFrmFechamento_Venda_PDV.Confira: boolean;
@@ -1665,13 +1644,20 @@ begin
   begin
     LblData_Pedido.Caption:= DateToStr(date);//FrmPDV.LblData.Caption;
     LblN_Pedido.Caption:= IntToStr(UDeclaracao.codigo);
-    LblCodigo.Caption:= IntToStr(UDeclaracao.codigo);
+    LblCodigo.Caption:= FrmPDV.LblCodigo.Caption;
     EdtSub_Total.Text:= FrmPDV.LblSub_Total.Caption;
     EdtTotal_Venda.Text:= FrmPDV.LblSub_Total.Caption;
     desc_acr:= 'D';
     Verifica_Credito_Cliente;
     ListBox1.Enabled:= true;
     MmoDados_Adicionais.Text:= mensagem + #13+#10 + 'Usuário: '+usuario + #13+#10 + 'SAC - Sistema de Acompanhamento e Gestão Comercial'+#13+#10;
+    cbVisualizarDANFE.Visible:= true;
+    Label10.Visible:= true;
+    MemoNFCe.Visible:= true;
+    LblSubTotal.Visible:= True;
+    EdtSub_Total.Visible:= true;
+    LblDesAcr.Visible:= true;
+    EdtDesconto.Visible:= True;
     //EdtDesconto.Text:= '0';
   end
   else if (FrmCarrega_Pedido_Caixa <> Nil) then
@@ -1699,9 +1685,33 @@ begin
     EdtSub_Total.Text:= FrmCarrega_Pedido_Caixa.qrycarrega_caixaTotal_Pedido.AsString;
     EdtTotal_Venda.Text:= FrmCarrega_Pedido_Caixa.qrycarrega_caixaTotal_Pedido.AsString;
     Pega_Forma_Pagamento_DAV;
+  end
+  else if (FrmNFE <> nil) then
+  begin
+    LblData_Pedido.Caption:= FrmNFE.qrypedido_pendenteData_Venda.AsString;
+    LblN_Pedido.Caption:= FrmNFE.qrypedido_pendenteN_Pedido.AsString;
+    LblCodigo.Caption:= FrmNFE.qrypedido_pendenteCodigo.AsString;
+
+    //if (FrmCarrega_Pedido_Caixa.qrycarrega_caixaTipo_Desc_Acr.AsString = '$') then
+      //EdtDesconto.Text:= FloatToStr(Abs(FrmCarrega_Pedido_Caixa.qrycarrega_caixaDesc_Acr.AsFloat)) //'0';//FloatToStr(Abs(FrmCarrega_Pedido_Caixa.qrycarrega_caixaTotal_Desconto.AsFloat));
+    //else
+      EdtDesconto.Text:= '0';
+
+    //ListBox1.Enabled:= false;
+    EdtSub_Total.Text:= FrmNFE.EdtValor_Total_Nota.Text;
+    EdtTotal_Venda.Text:= FrmNFE.EdtValor_Total_Nota.Text;
+    cbVisualizarDANFE.Visible:= false;
+    Label10.Visible:= false;
+    MemoNFCe.Visible:= false;
+    LblSubTotal.Visible:= false;
+    EdtSub_Total.Visible:= false;
+    LblDesAcr.Visible:= false;
+    EdtDesconto.Visible:= false;
+    //EdtValor.SetFocus;
+    //Pega_Forma_Pagamento_DAV;
   end;
 
-  oCP:= oCPDominio.CarregaDadosCondicao(EdtForma_Pagamento.Text);
+  //oCP:= oCPDominio.CarregaDadosCondicao(EdtForma_Pagamento.Text);
 
   RGDesc_Acr.ItemIndex:= tipo_desc_acr_padrao;
   RGTipo.ItemIndex:= 1;
@@ -1912,7 +1922,7 @@ begin
   Limpa_Dados_N_Pedido;
   TLog.Debug('Limpou dados pra próxima venda.');
 
-  qryfechamento_venda.Active:= false;
+  dm.qryfechamento_venda.Active:= false;
   TLog.Debug('Fechou query condições de pagamento.');
 
   FrmMenu_Geral.Timer2.Enabled:= true;
@@ -2376,11 +2386,11 @@ var
 begin
   if (pode_fechar = true) then
   begin
-    Calcula_Imposto_Lei;
-    MmoDados_Adicionais.Refresh;
-    mensagem_final:= MmoDados_Adicionais.Text;
     if (FrmPDV <> nil) then
     begin
+      Calcula_Imposto_Lei;
+      MmoDados_Adicionais.Refresh;
+      mensagem_final:= MmoDados_Adicionais.Text;
       GerarNFCe;
       EnviarNFCe;
       ImprimirNFCe;
@@ -2389,7 +2399,10 @@ begin
     end
     else
     begin
-      //FrmNFE.
+      LblFechamento.Caption:= 'Pagamento informado.';
+      Application.MessageBox('Pagamento informado. Por favor, comande a geração e envio da NFe/NFCe.', 'Pagamento informado.', MB_OK+MB_ICONQUESTION);
+      Atualiza_Dados_Fechamento(dm.ADOConnection1, FrmNFE.qrypedido_pendenteCodigo.AsInteger);
+      Close;
     end;
   end
   else
@@ -2721,11 +2734,11 @@ begin
       oLF.Codigo_Plano:= codigo_plano_financeiro;
       oLF.Data_Lancamento:= date;
       oLF.Data_Vencimento:= data_vencim;
-      oLF.Valor_Documento:= (qryfechamento_vendaValor.AsFloat - qryfechamento_vendaTroco.AsFloat);
-      TLog.Debug('Pegou valor do documento. '+FloatToStr(qryfechamento_vendaValor.AsFloat - qryfechamento_vendaTroco.AsFloat));
+      oLF.Valor_Documento:= (dm.qryfechamento_vendaValor.AsFloat - dm.qryfechamento_vendaTroco.AsFloat);
+      TLog.Debug('Pegou valor do documento. '+FloatToStr(dm.qryfechamento_vendaValor.AsFloat - dm.qryfechamento_vendaTroco.AsFloat));
       oLF.Desconto:= 0;
       oLF.Multa := 0;
-      oLF.Valor_Cobrado:= (qryfechamento_vendaValor.AsFloat - qryfechamento_vendaTroco.AsFloat);
+      oLF.Valor_Cobrado:= (dm.qryfechamento_vendaValor.AsFloat - dm.qryfechamento_vendaTroco.AsFloat);
       oLF.Observacoes:= '';
       //oLF.Status:= StatusEnum(1);
       oLF.Conta_Fixa:= 1;
@@ -2777,7 +2790,7 @@ begin
           oPLF.Status:= StatusEnumParcela.PAGO;
         end;
 
-        valaux2:= qryfechamento_vendaValor.AsFloat - qryfechamento_vendaTroco.AsFloat;
+        valaux2:= dm.qryfechamento_vendaValor.AsFloat - dm.qryfechamento_vendaTroco.AsFloat;
         valaux2:= (valaux2 / qtde_parcela);
         oPLF.Valor:= valaux2;
         oPLF.Valor_Pagar:= valaux2;
@@ -3094,7 +3107,7 @@ begin
   ApagaArquivosTEF;
   DeleteFile(ArqTemp);
   Impresso := true;
-  qryfechamento_venda.Active:= false;
+  dm.qryfechamento_venda.Active:= false;
 
   if (sem_rede = false) then
   begin
