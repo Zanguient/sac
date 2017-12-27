@@ -32,7 +32,7 @@ object FrmNFE: TFrmNFE
     Width = 814
     Height = 467
     Cursor = crHandPoint
-    ActivePage = TabSheet6
+    ActivePage = TabSheet1
     Align = alClient
     Style = tsFlatButtons
     TabOrder = 0
@@ -396,7 +396,7 @@ object FrmNFE: TFrmNFE
         Width = 808
         Height = 301
         Cursor = crHandPoint
-        ActivePage = TabSheet12
+        ActivePage = TabSheet13
         Style = tsFlatButtons
         TabOrder = 15
         object TabSheet12: TTabSheet
@@ -932,9 +932,9 @@ object FrmNFE: TFrmNFE
             end
           end
           object GBInformarPagamento: TGroupBox
-            Left = 557
+            Left = 544
             Top = 69
-            Width = 224
+            Width = 253
             Height = 165
             Caption = 'Informar Pagamento NFCe'
             TabOrder = 8
@@ -951,7 +951,7 @@ object FrmNFE: TFrmNFE
             object DBGrid2: TDBGrid
               Left = 3
               Top = 54
-              Width = 211
+              Width = 238
               Height = 103
               BorderStyle = bsNone
               DataSource = DM.ds_fechamento_Venda
@@ -974,7 +974,7 @@ object FrmNFE: TFrmNFE
                   Expanded = False
                   FieldName = 'Forma_Pagamento'
                   Title.Caption = 'Forma de Pagamento'
-                  Width = 131
+                  Width = 117
                   Visible = True
                 end
                 item
@@ -985,7 +985,7 @@ object FrmNFE: TFrmNFE
                 item
                   Expanded = False
                   FieldName = 'Valor'
-                  Width = 107
+                  Width = 83
                   Visible = True
                 end
                 item

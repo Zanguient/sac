@@ -31,13 +31,17 @@ object FrmConfiguracao_Sistema: TFrmConfiguracao_Sistema
     Width = 644
     Height = 418
     Cursor = crHandPoint
-    ActivePage = TabSheet1
+    ActivePage = TabSheet3
     Align = alClient
     Style = tsFlatButtons
     TabOrder = 0
     object TabSheet13: TTabSheet
       Caption = 'Geral'
       ImageIndex = 4
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Label41: TLabel
         Left = 215
         Top = 19
@@ -900,6 +904,10 @@ object FrmConfiguracao_Sistema: TFrmConfiguracao_Sistema
     object TabSheet2: TTabSheet
       Caption = 'Fiscal'
       ImageIndex = 1
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Label3: TLabel
         Left = 0
         Top = 13
@@ -992,6 +1000,10 @@ object FrmConfiguracao_Sistema: TFrmConfiguracao_Sistema
       Caption = 'NF-e'
       ImageIndex = 3
       TabVisible = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
     end
     object TabSheet3: TTabSheet
       Caption = 'Estoque/Financeiro'
@@ -1471,6 +1483,10 @@ object FrmConfiguracao_Sistema: TFrmConfiguracao_Sistema
     object TabSheet14: TTabSheet
       Caption = 'Pedido/NFe'
       ImageIndex = 5
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object PageControl2: TPageControl
         Left = 0
         Top = 0
@@ -1483,6 +1499,10 @@ object FrmConfiguracao_Sistema: TFrmConfiguracao_Sistema
         TabOrder = 0
         object TabSheet5: TTabSheet
           Caption = 'NFe/NFCe'
+          ExplicitLeft = 0
+          ExplicitTop = 0
+          ExplicitWidth = 0
+          ExplicitHeight = 0
           object GBConfiguracao_NFE: TGroupBox
             Left = 3
             Top = 3
@@ -1747,6 +1767,10 @@ object FrmConfiguracao_Sistema: TFrmConfiguracao_Sistema
         object TabSheet6: TTabSheet
           Caption = 'Pedido/Carn'#234
           ImageIndex = 1
+          ExplicitLeft = 0
+          ExplicitTop = 0
+          ExplicitWidth = 0
+          ExplicitHeight = 0
           object Label7: TLabel
             Left = 0
             Top = 1
@@ -1911,6 +1935,10 @@ object FrmConfiguracao_Sistema: TFrmConfiguracao_Sistema
     object TabSheet15: TTabSheet
       Caption = 'Campos Obrigat'#243'rios'
       ImageIndex = 6
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object GroupBox4: TGroupBox
         Left = 0
         Top = 0
@@ -2027,6 +2055,10 @@ object FrmConfiguracao_Sistema: TFrmConfiguracao_Sistema
     object TabSheet7: TTabSheet
       Caption = 'Configura'#231#245'es FAV'
       ImageIndex = 7
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object lbl1: TLabel
         Left = 128
         Top = 9

@@ -208,7 +208,7 @@ type
     forma_estornada: AnsiString;
     i: integer;
     qAux_Forma_Pagamento, qAux_Pagamento_DAV: TADOQuery;
-    MD5Criado, desc_acr: AnsiString;
+    MD5Criado, desc_acr, mensagem_final: AnsiString;
 
 
     linha, conta, i2, criado: integer;
@@ -1785,7 +1785,7 @@ end;
 procedure TFrmFechamento_Venda_PDV.GerarNFCe;
 var
   gerou_financeiro: boolean;
-  mensagem_final, MD5Produto, MD5ProdutoGerado: AnsiString;
+  MD5Produto, MD5ProdutoGerado: AnsiString;
   i: integer;
   qAux: TADOQuery;
   FClienteDom: TClienteDominio;
@@ -2380,7 +2380,7 @@ end;
 procedure TFrmFechamento_Venda_PDV.Fecha_Cupom();
 var
   gerou_financeiro: boolean;
-  mensagem_final, MD5Produto, MD5ProdutoGerado: AnsiString;
+  MD5Produto, MD5ProdutoGerado: AnsiString;
   i: integer;
   qAux: TADOQuery;
 begin

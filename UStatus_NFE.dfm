@@ -33,7 +33,7 @@ object frmStatus: TfrmStatus
       Height = 17
       Align = alTop
       AutoSize = False
-      Caption = 'Status da emiss'#227'o da NFe'
+      Caption = 'Status da emiss'#227'o da NFe/NFCe'
       Color = clBlack
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWhite

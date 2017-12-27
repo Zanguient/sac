@@ -791,6 +791,7 @@ type
     procedure ftpupdateWorkBegin(ASender: TObject; AWorkMode: TWorkMode;
       AWorkCountMax: Int64);
     procedure ACBrECF1MsgPoucoPapel(Sender: TObject);
+    procedure ACBrNFe1StatusChange(Sender: TObject);
   private
     { Private declarations }
   public
@@ -802,7 +803,7 @@ var
 
 implementation
 
-uses UGeral, UDeclaracao, UMenu_Geral;
+uses UGeral, UDeclaracao, UMenu_Geral, UStatus_NFE, pcnConversaoNFe;
 
 {$R *.dfm}
 
@@ -816,6 +817,106 @@ begin
   //begin
     //FrmMenu_Geral.StbStatus.Panels[6].Text := 'Status da bobina: Normal';
   //end;
+end;
+
+procedure TDM.ACBrNFe1StatusChange(Sender: TObject);
+begin
+  case dm.ACBrNFe1.Status of
+    stIdle :
+    begin
+      if ( frmStatus <> nil ) then
+        frmStatus.Hide;
+    end;
+    stNFeStatusServico :
+    begin
+      if ( frmStatus = nil ) then
+        frmStatus := TfrmStatus.Create(Application);
+      frmStatus.lblStatus.Caption := 'Verificando status do serviço...';
+      frmStatus.Show;
+      frmStatus.BringToFront;
+    end;
+    stNFeRecepcao :
+    begin
+      if ( frmStatus = nil ) then
+        frmStatus := TfrmStatus.Create(Application);
+      frmStatus.lblStatus.Caption := 'Enviando dados da NFe/NFCe...';
+      frmStatus.Show;
+      frmStatus.BringToFront;
+    end;
+    stNfeRetRecepcao :
+    begin
+      if ( frmStatus = nil ) then
+        frmStatus := TfrmStatus.Create(Application);
+      frmStatus.lblStatus.Caption := 'Recebendo dados da NFe/NFCe...';
+      frmStatus.Show;
+      frmStatus.BringToFront;
+    end;
+    stNfeConsulta :
+    begin
+      if ( frmStatus = nil ) then
+        frmStatus := TfrmStatus.Create(Application);
+      frmStatus.lblStatus.Caption := 'Consultando NFe/NFCe...';
+      frmStatus.Show;
+      frmStatus.BringToFront;
+    end;
+    stNfeCancelamento :
+    begin
+      if ( frmStatus = nil ) then
+        frmStatus := TfrmStatus.Create(Application);
+      frmStatus.lblStatus.Caption := 'Enviando cancelamento de NFe/NFCe...';
+      frmStatus.Show;
+      frmStatus.BringToFront;
+    end;
+    stNfeInutilizacao :
+    begin
+      if ( frmStatus = nil ) then
+        frmStatus := TfrmStatus.Create(Application);
+      frmStatus.lblStatus.Caption := 'Enviando pedido de Inutilização...';
+      frmStatus.Show;
+      frmStatus.BringToFront;
+    end;
+    stNFeRecibo :
+    begin
+      if ( frmStatus = nil ) then
+        frmStatus := TfrmStatus.Create(Application);
+      frmStatus.lblStatus.Caption := 'Consultando Recibo de Lote...';
+      frmStatus.Show;
+      frmStatus.BringToFront;
+    end;
+    stNFeCadastro :
+    begin
+      if ( frmStatus = nil ) then
+        frmStatus := TfrmStatus.Create(Application);
+      frmStatus.lblStatus.Caption := 'Consultando Cadastro...';
+      frmStatus.Show;
+      frmStatus.BringToFront;
+    end;
+    stNFeEmail :
+    begin
+      if ( frmStatus = nil ) then
+        frmStatus := TfrmStatus.Create(Application);
+      frmStatus.lblStatus.Caption := 'Enviando Email...';
+      frmStatus.Show;
+      frmStatus.BringToFront;
+    end;
+    stNFeCCe :
+    begin
+      if ( frmStatus = nil ) then
+        frmStatus := TfrmStatus.Create(Application);
+      frmStatus.lblStatus.Caption := 'Enviando Carta de Correção...';
+      frmStatus.Show;
+      frmStatus.BringToFront;
+    end;
+    stNFeEvento :
+    begin
+      if ( frmStatus = nil ) then
+        frmStatus := TfrmStatus.Create(Application);
+      frmStatus.lblStatus.Caption := 'Enviando Evento...';
+      frmStatus.Show;
+      frmStatus.BringToFront;
+    end;
+  end;
+  Application.ProcessMessages;
 end;
 
 procedure TDM.DataModuleCreate(Sender: TObject);

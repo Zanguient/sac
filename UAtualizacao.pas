@@ -615,6 +615,30 @@ begin
       end;
     end;
 
+    try
+      with qAux, sql do
+      begin
+        close;
+        Connection := dm.ADOConnection1;
+        clear;
+        add('if exists(select 1 from syscolumns where id = object_id(' +
+          QuotedStr('Condicao_Pagamento') + ')and name = ' +
+          QuotedStr('Cheque') + ')');
+        add('begin ');
+        add('ALTER TABLE Condicao_Pagamento ALTER COLUMN Cheque VARCHAR(30)');
+        add('end ');
+        ExecSQL;
+      end;
+    except
+      on E: Exception do
+      begin
+        Application.MessageBox
+          (PChar('Causa do erro em Condicao_Pagamento - Alterar Cheque: '
+          + E.Message), 'Erro', MB_OK + MB_ICONHAND);
+        abort;
+      end;
+    end;
+
   finally
     FreeAndNil(qAux);
   end;

@@ -7693,6 +7693,7 @@ object DM: TDM
   end
   object ACBrNFe1: TACBrNFe
     MAIL = ACBrMail1
+    OnStatusChange = ACBrNFe1StatusChange
     Configuracoes.Geral.SSLLib = libCapicomDelphiSoap
     Configuracoes.Geral.SSLCryptLib = cryCapicom
     Configuracoes.Geral.SSLHttpLib = httpIndy

@@ -186,7 +186,7 @@ begin
        exit;
 
       dm.ACBrNFe1.EventoNFe.Evento.Clear;
-      dm.ACBrNFe1.EventoNFe.idLote := (1) ;
+      dm.ACBrNFe1.EventoNFe.idLote := (1);
       with dm.ACBrNFe1.EventoNFe.Evento.Add do
       begin
         //infEvento.chNFe:= chave;

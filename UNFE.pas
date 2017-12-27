@@ -1186,7 +1186,7 @@ begin
         begin
           Grava_N_NFe(StrToInt(EdtN_Nota_Fiscal.Text));
           EdtChave_Acesso.Text := dm.ACBrNFe1.WebServices.Consulta.NFeChave;
-          Atualiza_NFe_Banco(EdtChave_Acesso.Text, '', EdtN_Nota_Fiscal.Text,
+          Atualiza_NFe_Banco(EdtChave_Acesso.Text, dm.ACBrNFe1.WebServices.Consulta.Protocolo, EdtN_Nota_Fiscal.Text,
             'NFE', 'PAGO', qryitens_nfCodigo.AsInteger,
             StrToDateTime(MEdtData_Emissao.Text), dm.ADOConnection1);
         end
@@ -1194,7 +1194,7 @@ begin
         begin
           Grava_N_NFCe(StrToInt(EdtN_Nota_Fiscal.Text));
           EdtChave_Acesso.Text := dm.ACBrNFe1.WebServices.Consulta.NFeChave;
-          Atualiza_NFCe_Banco(EdtChave_Acesso.Text, '', EdtN_Nota_Fiscal.Text,
+          Atualiza_NFCe_Banco(EdtChave_Acesso.Text, dm.ACBrNFe1.WebServices.Consulta.Protocolo, EdtN_Nota_Fiscal.Text,
             'NFCE', 'PAGO', qryitens_nfCodigo.AsInteger,
             StrToDateTime(MEdtData_Emissao.Text), dm.ADOConnection1);
         end;
@@ -1801,6 +1801,7 @@ end;
 procedure TFrmNFE.BBtnSalvarClick(Sender: TObject);
 var
   tipo: AnsiString;
+  Enviado: Boolean;
 begin
   try
     try
@@ -1818,7 +1819,18 @@ begin
 //      dm.ACBrNFe1.Configuracoes.WebServices.IntervaloTentativas := 15000;
 //      dm.ACBrNFe1.Configuracoes.WebServices.Tentativas := 10;
 
-      dm.ACBrNFe1.Enviar(EdtN_Nota_Fiscal.Text, false);
+      {Enviado:= False;
+      while not Enviado do
+      begin
+        try}
+          dm.ACBrNFe1.Enviar(EdtN_Nota_Fiscal.Text, false);
+          {Enviado:= true;
+        except on E:Exception do
+        begin
+          Enviado:= false;
+        end;
+        end;
+      end;}
 
       //se for NFe, grava o número da NFe para posteriormente gerar o próximo, senão grava o número da NFCe.
       if (CMBTipo_Nota.ItemIndex = 0) then
