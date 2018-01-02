@@ -663,10 +663,10 @@ type
     GBInformarPagamento: TGroupBox;
     BtnInformar_Pagamento: TButton;
     DBGrid2: TDBGrid;
+    EdtCodigo_Pedido: TEdit;
     procedure BBtnSalvarClick(Sender: TObject);
     procedure BBtnPesquisarClick(Sender: TObject);
     procedure BBtnFecharClick(Sender: TObject);
-    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure FormCreate(Sender: TObject);
     procedure BBtnCancelarClick(Sender: TObject);
@@ -860,6 +860,7 @@ type
       var Text: string; DisplayText: Boolean);
     procedure ClientDataSet1BeforePost(DataSet: TDataSet);
     procedure CMBTipo_NotaChange(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
   private
     // Itens_NF: URegistro.TItens_NFE;
     NF: URegistro.TNFE;
@@ -1666,6 +1667,18 @@ begin
     exit;
   end;
 
+  if (CMBTipo_Nota.ItemIndex = 1) then
+  begin
+    if (dm.qryfechamento_venda.Active=false) then
+    begin
+      TMensagens.MensagemErro('É necessário informar o pagamento quando o tipo de emissão for NFCe.');
+      PageControl1.TabIndex:= 0;
+      PageControl3.TabIndex:= 1;
+      BtnInformar_Pagamento.SetFocus;
+      exit;
+    end;
+  end;
+
   if (gerar_financeiro = 1) and (gera_fi = 0) then
   // gera_financeiro é da config. sistema. gera_fi é do cfop
   begin
@@ -1731,12 +1744,32 @@ begin
     TLog.Debug('Gerou NFe no coomponente ACBr.');
     BBtnSalvar.Enabled := true;
 
+    if (CMBTipo_Nota.ItemIndex = 0) then
+    begin
+      if (cbVisualizarDANFE.Checked) then
+      begin
+        dm.ACBrNFeDANFeRL1.MostrarPreview:= true;
+      end
+      else
+        dm.ACBrNFeDANFeRL1.MostrarPreview:= false;
+    end
+    else
+    begin
+      if (cbVisualizarDANFE.Checked) then
+      begin
+        dm.ACBrNFeDANFCeFortes1.MostrarPreview:= true
+      end
+      else
+        dm.ACBrNFeDANFCeFortes1.MostrarPreview:= false;
+    end;
+
     if (cbVisualizarDANFE.Checked) then
     begin
       dm.ACBrNFe1.NotasFiscais.Items[0].GravarXML;
       MemoResp.Lines.Text := dm.ACBrNFe1.NotasFiscais.Items[0].NomeArq;
       dm.ACBrNFe1.NotasFiscais.Items[0].Imprimir;
     end;
+
   except
     on E: Exception do
     begin
@@ -2367,6 +2400,7 @@ begin
     EdtModelo.Text:= '55';
     dm.ACBrNFe1.Configuracoes.Geral.ModeloDF:= moNFe;
     dm.ACBrNFe1.DANFE.ImprimeEmUmaLinha:= false;
+    dm.qryfechamento_venda.Close;
 
     if (gerar_financeiro = 1) then
     begin
@@ -2543,8 +2577,8 @@ begin
     qryitens_nf.First;
     while not qryitens_nf.Eof do
     begin
-      vaux := StringReplace(qryitens_nfValor_Original.AsString,
-        ThousandSeparator, '', [rfReplaceAll]);
+      //vaux := StringReplace(qryitens_nfValor_Unitario.AsString, ThousandSeparator, '', [rfReplaceAll]);
+      vaux := StringReplace(qryitens_nfValor_Original.AsString, ThousandSeparator, '', [rfReplaceAll]);
       TLog.Debug(' Valor da variável vaux :' + vaux);
       valor_un := StrToFloat(vaux);
       TLog.Debug(' Valor da variável valor_un :' + FloatToStr(valor_un));
@@ -3442,6 +3476,7 @@ begin
     if (qrypedido_pendenteCOO.AsString <> '') then
       FCOO := qrypedido_pendenteCOO.AsString;
 
+    EdtCodigo_Pedido.Text:= qrypedido_pendenteCodigo.AsString;
     MMOPedido.Text := qrypedido_pendenteN_Pedido.AsString;
     MMOCOO.Text := qrypedido_pendenteCOO.AsString;
     TLog.Debug('VALOR VARIÁVEL FPedidosWhere: ' + FPedidosWhere);
@@ -3497,93 +3532,19 @@ end;
 procedure TFrmNFE.DBGrid1DrawColumnCell(Sender: TObject; const Rect: TRect;
   DataCol: Integer; Column: TColumn; State: TGridDrawState);
 begin
-  with DBGrid1 do
+  TDbGrid(Sender).Canvas.font.Color:= clBlack; //aqui é definida a cor da fonte
+  if gdSelected in State then
+  with (Sender as TDBGrid).Canvas do
   begin
-    if Odd(DataSource.DataSet.RecNo) then
-      Canvas.Brush.Color := clMenu
-    else
-      Canvas.Brush.Color := clWindow;
-
-    Canvas.FillRect(Rect);
-    TDBGrid(Sender).Canvas.font.Color := clBlack;
-
-    if gdSelected in State then
-      with (Sender as TDBGrid).Canvas do
-      begin
-        Brush.Color := clSilver;
-        FillRect(Rect);
-      end;
-
-    DefaultDrawColumnCell(Rect, DataCol, Column, State);
-  end;
-
-  { TDbGrid(Sender).Canvas.font.Color:= cor_fonte_dbgrid; //aqui é definida a cor da fonte
-    if gdSelected in State then
-    with (Sender as TDBGrid).Canvas do
-    begin
     Brush.Color:= cor_linha_dbgrid; //aqui é definida a cor do fundo
     FillRect(Rect);
-    end;
+  end;
 
-    TDbGrid(Sender).DefaultDrawDataCell(Rect, TDbGrid(Sender).columns[datacol].field, State); }
+  TDbGrid(Sender).DefaultDrawDataCell(Rect, TDbGrid(Sender).columns[datacol].field, State);
 
-  { if (gdFocused in State) then
-    begin
-    if (Column.Field.FieldName = DBCheckBox1.DataField) then
-    begin
-    DBCheckBox1.Left := Rect.Left + DBGrid1.Left + 2;
-    DBCheckBox1.Top := Rect.Top + DBGrid1.top + 2;
-    DBCheckBox1.Width := Rect.Right - Rect.Left;
-    DBCheckBox1.Height := Rect.Bottom - Rect.Top;
-    DBCheckBox1.Visible := True;
-    end
-    end
-    else
-    begin
-    if (Column.Field.FieldName = DBCheckBox1.DataField) then
-    begin
-    DrawRect:=Rect;
-    InflateRect(DrawRect,-1,-1);
-    DrawState := ISChecked[Column.Field.AsBoolean];
-    DBGrid1.Canvas.FillRect(Rect);
-    DrawFrameControl(DBGrid1.Canvas.Handle, DrawRect,
-    DFC_BUTTON, DrawState);
-    end;
-    end; }
-
-  { if (Column.Field = qrypedido_pendenteStatus) then
-    begin
-    DBGrid3.Canvas.FillRect(Rect);
-    ImageList1.Draw(DBGrid3.Canvas,Rect.Left+10,Rect.Top+10,0);
-    if (qrypedido_pendenteStatus.AsString = 'PAGO') then
-    ImageList1.Draw(DBGrid3.Canvas,Rect.Left+10,Rect.Top+10,1)
-    else
-    ImageList1.Draw(DBGrid3.Canvas,Rect.Left+10,Rect.Top+10,0);
-    end; }
-
-  { if Column.FieldName = 'Emitido' then
-    begin
-    DBGrid3.Canvas.FillRect(Rect);
-    Check := 0;
-
-    if qrypedido_pendenteEmitido.AsString = 'X' then
-    Check := DFCS_CHECKED
-    else
-    Check := 0;
-
-    R:=Rect;
-
-    InflateRect(R,-2,-2); //Diminue o tamanho do CheckBox
-    DrawFrameControl(DBGrid3.Canvas.Handle,R,DFC_BUTTON, DFCS_BUTTONCHECK or Check);
-    end; }
-
-  { If qrypedido_pendenteEmitido.AsString = 'X' then
-    Dbgrid3.Canvas.Font.Color:= clMenu
-    else
-    Dbgrid3.Canvas.Font.Color:= clWindow;
-
-    Dbgrid3.DefaultDrawDataCell(Rect, dbgrid3.columns[datacol].field, State); }
-
+  if dm.qryitens_vendaCancelado.AsString = 'S' then
+    DBGrid1.Canvas.Font.Color:= clRed;
+  dbgrid1.DefaultDrawDataCell(Rect, dbgrid1.columns[datacol].field, State);
 end;
 
 procedure TFrmNFE.DBGrid1KeyDown(Sender: TObject; var Key: Word;
@@ -4602,12 +4563,6 @@ begin
   ativo := true;
 end;
 
-procedure TFrmNFE.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
-begin
-  FrmNFE.Release;
-  FrmNFE := Nil;
-end;
-
 procedure TFrmNFE.Atualiza_Status_OS;
 var
   qAux: TADOQuery;
@@ -4906,6 +4861,13 @@ begin
   TLog.Info('--- SAIU DO MÉTODO Atualiza_Itens_NFe ---');
 end;
 
+procedure TFrmNFE.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+  dm.qryfechamento_venda.Close;
+  FrmNFE.Release;
+  FrmNFE := Nil;
+end;
+
 procedure TFrmNFE.FormCreate(Sender: TObject);
 begin
   try
@@ -5068,14 +5030,22 @@ begin
   TLog.Info('--- MÉTODO GERAR NFE---');
 
   // Ide.cNF       := ; //Caso não seja preenchido será gerado um número aleatório pelo componente
+  DadosEmissaoNFE:= TDadosEmissaoNFE.Create;
+  DadosEmissaoNFE.Itens.Clear;
+  DadosEmissaoNFE.Recebimentos.Clear;
+  DadosEmissaoNFE.Pagamentos.Clear;
+  DadosEmissaoNFEItens:= TDadosEmissaoNFEItens.Create;
+  DadosEmissaoNFERecebimento:= TDadosEmissaoNFERecebimento.Create;
+  DadosEmissaoNFEPagamento:= TDadosEmissaoNFEPagamento.Create;
+
   DadosEmissaoNFE.CFOP := EdtCFOP.Text;
   DadosEmissaoNFE.FormaPagamento:= CmbForma_Pagamento.ItemIndex;
   DadosEmissaoNFE.Modelo:= EdtModelo.Text;
   DadosEmissaoNFE.Serie:= EdtSerie.Text;
   DadosEmissaoNFE.NNF:= StrToInt(EdtN_Nota_Fiscal.Text);
-  DadosEmissaoNFE.DataSaida:= MEdtData_Entrada_Saida.Text;
-  DadosEmissaoNFE.HoraSaida:= MEdtHora_Entrada_Saida.Text;
-  DadosEmissaoNFE.DataEmissao:= DateTimeToStr(FDataEmissao);
+  DadosEmissaoNFE.DataSaida:= DateTimeToStr(now);
+  DadosEmissaoNFE.HoraSaida:= FormatDateTime('hh:mm', now);
+  DadosEmissaoNFE.DataEmissao:= DateTimeToStr(now);
   DadosEmissaoNFE.TipoOperacao:= RGTipo_Operacao.ItemIndex;
   DadosEmissaoNFE.FormaEmissao:= forma_emissao;
   DadosEmissaoNFE.Ambiente := ambiente;
@@ -5103,6 +5073,7 @@ begin
         [rfReplaceAll]);
     DadosEmissaoNFEItens.Unidade:= qryitens_nfUN.AsString;
     DadosEmissaoNFEItens.Quantidade:= qryitens_nfQtde.AsFloat;
+    DadosEmissaoNFEItens.ValorUnitario:= qryitens_nfValor_Unitario.AsFloat;
     DadosEmissaoNFEItens.ValorOriginal:= qryitens_nfValor_Original.AsFloat;
     DadosEmissaoNFEItens.ValorFrete:= qryitens_nfValor_Frete.AsFloat;
     DadosEmissaoNFEItens.ValorSeguro:= qryitens_nfValor_Seguro.AsFloat;

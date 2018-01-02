@@ -1660,7 +1660,7 @@ begin
         Mensagem_Venda_Andamento;
         abort;
       end;
-      UDeclaracao.n_item:= '';
+      //UDeclaracao.n_item:= '';
       qtde_itens:= 0;
       Util.Habilita_Campos(FrmPre_Venda);
       Util.Limpa_Campos(FrmPre_Venda);

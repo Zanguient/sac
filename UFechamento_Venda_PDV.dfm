@@ -5,7 +5,7 @@ object FrmFechamento_Venda_PDV: TFrmFechamento_Venda_PDV
   BorderStyle = bsSingle
   Caption = 'Fechamento Venda'
   ClientHeight = 484
-  ClientWidth = 809
+  ClientWidth = 814
   Color = clWindow
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -160,12 +160,10 @@ object FrmFechamento_Venda_PDV: TFrmFechamento_Venda_PDV
     ParentFont = False
   end
   object LblCodigo: TLabel
-    Left = 733
-    Top = 208
-    Width = 59
+    Left = 76
+    Top = 129
+    Width = 3
     Height = 13
-    Caption = 'LblN_Codigo'
-    Visible = False
   end
   object Shape7: TShape
     Left = 3
@@ -248,6 +246,19 @@ object FrmFechamento_Venda_PDV: TFrmFechamento_Venda_PDV
     Width = 203
     Height = 13
     Caption = 'Formas de pagamento selecionadas'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = [fsBold]
+    ParentFont = False
+  end
+  object Label1: TLabel
+    Left = 8
+    Top = 129
+    Width = 65
+    Height = 13
+    Caption = 'C'#243'd. Venda:'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -11
@@ -541,7 +552,7 @@ object FrmFechamento_Venda_PDV: TFrmFechamento_Venda_PDV
     TabOrder = 13
   end
   object BtnGerarNFCe: TButton
-    Left = 650
+    Left = 576
     Top = 78
     Width = 75
     Height = 25
@@ -551,7 +562,7 @@ object FrmFechamento_Venda_PDV: TFrmFechamento_Venda_PDV
     OnClick = BtnGerarNFCeClick
   end
   object BtnEnviarNFCe: TButton
-    Left = 731
+    Left = 657
     Top = 78
     Width = 75
     Height = 25
@@ -559,6 +570,16 @@ object FrmFechamento_Venda_PDV: TFrmFechamento_Venda_PDV
     TabOrder = 15
     Visible = False
     OnClick = BtnEnviarNFCeClick
+  end
+  object BtnEdita_Itens: TButton
+    Left = 738
+    Top = 78
+    Width = 75
+    Height = 25
+    Caption = 'Editar Itens'
+    TabOrder = 16
+    Visible = False
+    OnClick = BtnEdita_ItensClick
   end
   object ADOQuery1: TADOQuery
     Connection = DM.ADOConnection1

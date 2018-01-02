@@ -1075,9 +1075,12 @@ function GetTmpFileName(ext: AnsiString): AnsiString;
 function GetTmpDir: AnsiString;
 procedure Pega_INI_Conexao;
 procedure Pega_INI_Balanca;
+procedure Pega_INI_ImpressoraNF;
 function Verifica_Status_Rede(IP: AnsiString): boolean;
 procedure Insere_Tratamento_ICMS;
 function Conecta_Balanca(Balanca: TACBrBal): boolean;
+procedure Atualiza_Itens_NFe(var Query: TADOQuery; var Conexao: TADOConnection; Codigo_Pedido: Integer);
+function Conecta_ImpressoraNF: boolean;
 procedure ForceForegroundWindow(hwnd: THandle);
 Function VersaoExe: String;
 procedure Foco_Aplicacao;
@@ -1239,7 +1242,6 @@ var
     den_op, Mensagem, tipo_venda, COOInicial, COOFinal, GrandeTotal, md5_alt,
     n_laudo, issqnn, cfop_v_d, cfop_v_f, cfop_v_d_p, cfop_v_f_p,
     caminho_pdf_carne, observacoes_carne: AnsiString;
-
   n_cupom: AnsiString;
 
   custo_op: Double;
@@ -1430,6 +1432,9 @@ var
 
     Balanca_Modelo, Balanca_BaudRate, Balanca_DataBits, Balanca_Parity,
     Balanca_StopBits, Balanca_Hand, Balanca_TimeOut: Integer;
+
+    ImpNFModelo, ImpNFPorta, ImpNFBaudRate, ImpNFDataBits, ImpNFHandShake,
+    ImpNFHardFlow, ImpNFParity, ImpNFStopBits, ImpNFControlaPorta, ImpNFArquivoLog: AnsiString;
 
   Tipo_Barra_Etiqueta, Porta_Impressora_Etiqueta, Balanca_Porta: AnsiString;
 
@@ -4936,6 +4941,76 @@ begin
   StrDispose(Parquivo);
 end;
 
+function Conecta_ImpressoraNF: boolean;
+begin
+  try
+    TLog.Info('--- MÉTODO Conecta_ImpressoraNF --- ');
+    if dm.ACBrPosPrinter1.Ativo then
+      dm.ACBrPosPrinter1.Desativar;
+
+    // configura porta de comunicação
+    if (ImpNFModelo = 'BEMATECH') then
+      dm.ACBrPosPrinter1.Modelo:= ppEscBematech;
+
+    if (ImpNFModelo = 'DARUMA') then
+      dm.ACBrPosPrinter1.Modelo:= ppEscDaruma;
+
+    if (ImpNFModelo = 'ELGIN') then
+      dm.ACBrPosPrinter1.Modelo:= ppEscElgin;
+
+    if (ImpNFModelo = 'EPSON') then
+      dm.ACBrPosPrinter1.Modelo:= ppEscEpsonP2;
+
+    if (ImpNFModelo = 'TEXTO') then
+      dm.ACBrPosPrinter1.Modelo:= ppTexto;
+    TLog.Debug('Modelo: '+ImpNFModelo);
+
+    dm.ACBrPosPrinter1.Porta:= ImpNFPorta;
+    TLog.Debug('Porta: '+ImpNFPorta);
+
+    dm.ACBrPosPrinter1.Device.Baud := StrToInt(ImpNFBaudRate);
+    TLog.Debug('BaudRate: '+ImpNFBaudRate);
+
+    dm.ACBrPosPrinter1.Device.HandShake := TACBrHandShake(StrToInt(ImpNFHandShake));
+    TLog.Debug('HandShake: '+ImpNFHandShake);
+
+    if (ImpNFHardFlow = '0') then
+      dm.ACBrPosPrinter1.Device.HardFlow := true
+    else
+      dm.ACBrPosPrinter1.Device.HardFlow := false;
+    TLog.Debug('HardFlow: '+ImpNFHardFlow);
+
+    dm.ACBrPosPrinter1.Device.Parity := TACBrSerialParity(StrToInt(ImpNFParity));
+    TLog.Debug('Parity: '+ImpNFParity);
+
+    dm.ACBrPosPrinter1.Device.Stop := TACBrSerialStop(StrToInt(ImpNFStopBits));
+    TLog.Debug('Stop: '+ImpNFStopBits);
+
+    if (ImpNFControlaPorta = '0') then
+      dm.ACBrPosPrinter1.ControlePorta:= true
+    else
+      dm.ACBrPosPrinter1.ControlePorta:= false;
+    TLog.Debug('ControlePorta: '+ImpNFControlaPorta);
+
+    dm.ACBrPosPrinter1.ArqLOG:= ImpNFArquivoLog;
+    dm.ACBrPosPrinter1.Device.ArqLOG := ImpNFArquivoLog;
+    TLog.Debug('ArqLOG: '+ImpNFArquivoLog);
+
+    dm.ACBrPosPrinter1.Ativar;
+    Result := true;
+    TLog.Debug('Impressora Conectada!');
+    TLog.Info('--- FIM MÉTODO Conecta_ImpressoraNF --- ');
+  except
+    on E: Exception do
+    begin
+      TLog.Error('Erro ao ativar impressora: ' + E.Message);
+      application.MessageBox(Pchar('Erro ao ativar impressora não fiscal: ' + E.Message),
+        'Erro ao tentar ativar impressora', MB_OK + MB_ICONHAND);
+      Result := false;
+    end;
+  end;
+end;
+
 function Conecta_Balanca(Balanca: TACBrBal): boolean;
 var
   iConta: Integer;
@@ -4979,6 +5054,42 @@ begin
     iRetorno := Bematech_FI_InfoBalanca(pAnsiChar(Porta), 4, Peso, preco,
     total_peso); }
 
+end;
+
+procedure Atualiza_Itens_NFe(var Query: TADOQuery; var Conexao: TADOConnection; Codigo_Pedido: Integer);
+var
+  chis: string;
+begin
+  try
+    TLog.Info('--- ENTROU DO MÉTODO Atualiza_Itens_NFe na tela Edita_Item_PDV ---');
+    with Query, sql do
+    begin
+      Close;
+      Connection:= Conexao;
+      Clear;
+      Add('select IP.*, ');
+      Add('Cli.Codigo as Cod_Cli, PEC.Inscricao_Estadual, Cli.Insc_Municipal, Cli.Email, Cli.Suframa, Cli.Enquadramento, ');
+      Add('PEC.Cidade, PEC.Nome, PEC.CPF_CNPJ, ');
+      Add('PEC.UF, PEC.Codigo_Municipio, PEC.Setor, PEC.Endereco as Log, PEC.CEP, PEC.Numero, PEC.Complemento, PEC.Telefone,');
+      Add('PPD.Forma_Pagamento, PPD.Qtde_Parcela, PPD.Prazo, PPD.Taxa, PPD.Codigo_Forma_Pagamento, PPD.Forma_Pagamento, PPD.Tipo_Pagamento, ');
+      Add('Pro.Estoque, Pro.Volume, Pro.Valor_Compra as Valor_Compra_Atual from Itens_Pedido IP');
+      Add('left join Pedido P on (IP.Codigo = P.Codigo)');
+      Add('left join Cliente Cli on (P.Codigo_Cliente = Cli.Codigo)');
+      Add('left join Pedido_Endereco_Cliente PEC on (P.Codigo = PEC.Codigo)');
+      Add('left join Pedido_Pagamento_DAV PPD on (P.Codigo = PPD.Codigo)');
+      Add('left join Produto Pro on (IP.Codigo_Produto = Pro.Codigo)');
+
+      Add('where IP.Cancelado = '+QuotedStr('N') + ' AND IP.Codigo = :Codigo');
+      Parameters.ParamByName('Codigo').Value:= Codigo_Pedido;
+      open;
+    end;
+  except
+    on E: Exception do
+    begin
+      ShowMessage(E.Message);
+    end;
+  end;
+  TLog.Info('--- SAIU DO MÉTODO Atualiza_Itens_NFe na tela Edita_Item_PDV ---');
 end;
 
 function Verifica_Status_Rede(IP: AnsiString): boolean;
@@ -5133,6 +5244,56 @@ begin
     Balanca_Hand := 3;
 
   Balanca_TimeOut := StrToInt(ArqIni.ReadString('Balanca', 'TimeOut', ''));
+end;
+
+procedure Pega_INI_ImpressoraNF;
+var
+  ArqIni: TIniFile;
+begin
+  TLog.Info('--- MÉTODO Pega_INI_ImpressoraNF ---');
+  ArqIni := TIniFile.Create(ExtractFilePath(application.ExeName) +
+    'ImpressoraNF.ini');
+
+  if (ArqIni.ReadString('Impressora', 'Modelo', '') = 'BEMATECH') then
+    ImpNFModelo:= 'BEMATECH'
+  else if (ArqIni.ReadString('Impressora', 'Modelo', '') = 'DARUMA') then
+    ImpNFModelo:= 'DARUMA'
+  else if (ArqIni.ReadString('Impressora', 'Modelo', '') = 'ELGIN') then
+    ImpNFModelo:= 'ELGIN'
+  else if (ArqIni.ReadString('Impressora', 'Modelo', '') = 'EPSON') then
+    ImpNFModelo:= 'EPSON'
+  else
+    ImpNFModelo:= 'TEXTO';
+
+  TLog.Debug('Modelo: '+ImpNFModelo);
+
+  ImpNFPorta := ArqIni.ReadString('Impressora', 'Porta', '');
+  TLog.Debug('Porta: '+ImpNFPorta);
+
+  ImpNFBaudRate := ArqIni.ReadString('Impressora', 'BaudRate', '');
+  TLog.Debug('BaudRate: '+ImpNFBaudRate);
+
+  ImpNFDataBits := ArqIni.ReadString('Impressora', 'DataBits', '');
+  TLog.Debug('DataBits: '+ImpNFDataBits);
+
+  ImpNFHandShake := ArqIni.ReadString('Impressora', 'HandShake', '');
+  TLog.Debug('HandShake: '+ImpNFHandShake);
+
+  ImpNFHardFlow := ArqIni.ReadString('Impressora', 'HardFlow', '');
+  TLog.Debug('HardFlow: '+ImpNFHardFlow);
+
+  ImpNFParity := ArqIni.ReadString('Impressora', 'Parity', '');
+  TLog.Debug('Parity: '+ImpNFParity);
+
+  ImpNFStopBits := ArqIni.ReadString('Impressora', 'StopBits', '');
+  TLog.Debug('StopBits: '+ImpNFStopBits);
+
+  ImpNFControlaPorta := ArqIni.ReadString('Impressora', 'ControlePorta', '');
+  TLog.Debug('ControlePorta: '+ImpNFControlaPorta);
+
+  ImpNFArquivoLog := ArqIni.ReadString('Impressora', 'ArquivoLog', '');
+  TLog.Debug('ArquivoLog: '+ImpNFArquivoLog);
+  TLog.Info('--- FIM MÉTODO Pega_INI_ImpressoraNF ---');
 end;
 
 procedure ForceForegroundWindow(hwnd: THandle);
@@ -13454,7 +13615,7 @@ begin
         Prod.qCom := DadosEmissaoNFe.Itens.Items[i].Quantidade;
         Prod.vUnCom := DadosEmissaoNFe.Itens.Items[i].ValorOriginal;
         Prod.vProd := DadosEmissaoNFe.Itens.Items[i].Quantidade *
-          DadosEmissaoNFe.Itens.Items[i].ValorOriginal;
+          DadosEmissaoNFe.Itens.Items[i].ValorOriginal;//DadosEmissaoNFe.Itens.Items[i].ValorOriginal;
         // qryitens_nfSub_Total.AsFloat;//Calcula_Valor(FloatToStr(qryitens_nfQtde.AsFloat * qryitens_nfValor_Unitario.AsFloat));
         { TODO -oOwner -cGeneral : VERIFDICAR SE PRECISA ALTERAR AQUI }
         Prod.cEANTrib := '';

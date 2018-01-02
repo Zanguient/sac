@@ -285,8 +285,8 @@ begin
         if (Confira = true) then
         BEGIN
           Tratamento_ICMS.Inserir(Tratamento_ICMS, Conexao);
-          Cria_Arquivo_Atualiza_Dados('ITICMS');
-          Cria_Arquivo_Atualiza_Dados('IITICMS');
+          //Cria_Arquivo_Atualiza_Dados('ITICMS');
+          //Cria_Arquivo_Atualiza_Dados('IITICMS');
           UDeclaracao.Insere_Historico(usuario, 'CADASTROU TRATAMENTO DE ICMS ' + EdtDescricao.Text + '.', TimeToStr(time), insercao, date);
         END
         else
@@ -300,8 +300,8 @@ begin
       if (Confira = true) then
       BEGIN
         Tratamento_ICMS.Alterar(Tratamento_ICMS, Conexao);
-        Cria_Arquivo_Atualiza_Dados('ATICMS');
-        Cria_Arquivo_Atualiza_Dados('AITICMS');
+        //Cria_Arquivo_Atualiza_Dados('ATICMS');
+        //Cria_Arquivo_Atualiza_Dados('AITICMS');
         UDeclaracao.Insere_Historico(usuario, 'ALTEROU TRATAMENTO DE ICMS ' + EdtDescricao.Text + '.', TimeToStr(time), alteracao, date);
       END
       else
@@ -319,7 +319,7 @@ begin
     BBtnPesquisar.Enabled:= true;
     BBtnCancelar.Enabled:= false;
     BBtnNovo.Enabled:= true;
-    Insere_Tratamento_ICMS;
+    //Insere_Tratamento_ICMS;
     Util.Desabilita_Campos(FrmTratamento_ICMS);
     Cria_Arquivo_Atualiza_Produto;
 end;

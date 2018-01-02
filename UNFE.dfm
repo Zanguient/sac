@@ -3,7 +3,7 @@ object FrmNFE: TFrmNFE
   Top = 0
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
-  Caption = 'Emiss'#227'o de NFe'
+  Caption = 'Emiss'#227'o de NFe/NFCe'
   ClientHeight = 467
   ClientWidth = 951
   Color = clWindow
@@ -18,7 +18,7 @@ object FrmNFE: TFrmNFE
   Position = poDesigned
   Visible = True
   OnActivate = FormActivate
-  OnCloseQuery = FormCloseQuery
+  OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnDeactivate = FormDeactivate
@@ -169,6 +169,21 @@ object FrmNFE: TFrmNFE
         ParentFont = False
         Visible = False
       end
+      object EdtCodigo_Pedido: TEdit
+        Left = 184
+        Top = 34
+        Width = 65
+        Height = 17
+        BevelInner = bvNone
+        BevelKind = bkFlat
+        BevelOuter = bvRaised
+        BorderStyle = bsNone
+        CharCase = ecUpperCase
+        NumbersOnly = True
+        TabOrder = 4
+        OnKeyDown = EdtN_Nota_FiscalKeyDown
+        OnKeyPress = EdtN_Nota_FiscalKeyPress
+      end
       object MEdtData_Emissao: TMaskEdit
         Left = 88
         Top = 34
@@ -226,7 +241,7 @@ object FrmNFE: TFrmNFE
         BevelOuter = bvRaised
         BorderStyle = bsNone
         CharCase = ecUpperCase
-        TabOrder = 11
+        TabOrder = 12
       end
       object EdtCodigo_CFOP: TEdit
         Left = 0
@@ -242,7 +257,7 @@ object FrmNFE: TFrmNFE
         Color = clMenu
         ParentShowHint = False
         ShowHint = True
-        TabOrder = 6
+        TabOrder = 7
         OnKeyDown = EdtCodigo_CFOPKeyDown
         OnKeyPress = EdtCodigo_CFOPKeyPress
       end
@@ -257,7 +272,7 @@ object FrmNFE: TFrmNFE
         BevelKind = bkFlat
         BorderStyle = bsNone
         CharCase = ecUpperCase
-        TabOrder = 7
+        TabOrder = 8
         OnKeyPress = EdtCFOPKeyPress
       end
       object MEdtHora_Entrada_Saida: TMaskEdit
@@ -286,7 +301,7 @@ object FrmNFE: TFrmNFE
         BevelOuter = bvRaised
         BorderStyle = bsNone
         CharCase = ecUpperCase
-        TabOrder = 10
+        TabOrder = 11
       end
       object EdtChave_Acesso: TEdit
         Left = 372
@@ -298,21 +313,20 @@ object FrmNFE: TFrmNFE
         BevelOuter = bvRaised
         BorderStyle = bsNone
         CharCase = ecUpperCase
-        TabOrder = 12
+        TabOrder = 13
         OnKeyDown = EdtN_Nota_FiscalKeyDown
       end
       object RGTipo_Operacao: TRadioGroup
-        Left = 264
-        Top = 29
-        Width = 169
-        Height = 36
+        Left = 336
+        Top = 19
+        Width = 97
+        Height = 47
         Caption = 'Tipo de Opera'#231#227'o'
-        Columns = 2
         ItemIndex = 1
         Items.Strings = (
           '0 - Entrada'
           '1 - Saida')
-        TabOrder = 4
+        TabOrder = 5
       end
       object CmbForma_Pagamento: TComboBox
         Left = 95
@@ -329,7 +343,7 @@ object FrmNFE: TFrmNFE
         Font.Style = []
         MaxLength = 20
         ParentFont = False
-        TabOrder = 9
+        TabOrder = 10
         Items.Strings = (
           'PAGAMENTO '#192' VISTA'
           'PAGAMENTO '#192' PRAZO'
@@ -350,7 +364,7 @@ object FrmNFE: TFrmNFE
         Font.Style = []
         MaxLength = 5
         ParentFont = False
-        TabOrder = 8
+        TabOrder = 9
         OnChange = CMBTipo_NotaChange
         Items.Strings = (
           'NF-E'
@@ -364,7 +378,7 @@ object FrmNFE: TFrmNFE
         KeyField = 'Codigo'
         ListField = 'Descricao'
         ListSource = DM.DataSource9
-        TabOrder = 13
+        TabOrder = 14
         Visible = False
       end
       object RGFinalidade: TRadioGroup
@@ -379,7 +393,7 @@ object FrmNFE: TFrmNFE
           '2- NF-e Complementar'
           '3- NF-e de ajuste'
           '4- Devolu'#231#227'o de Mercadoria')
-        TabOrder = 14
+        TabOrder = 15
         OnClick = RGFinalidadeClick
       end
       object cbVisualizarDANFE: TCheckBox
@@ -388,7 +402,7 @@ object FrmNFE: TFrmNFE
         Width = 161
         Height = 17
         Caption = 'Visulizar DANFE ao gerar NFe?'
-        TabOrder = 5
+        TabOrder = 6
       end
       object PageControl3: TPageControl
         Left = 0
@@ -396,11 +410,11 @@ object FrmNFE: TFrmNFE
         Width = 808
         Height = 301
         Cursor = crHandPoint
-        ActivePage = TabSheet13
+        ActivePage = TabSheet12
         Style = tsFlatButtons
-        TabOrder = 15
+        TabOrder = 16
         object TabSheet12: TTabSheet
-          Caption = 'Pedidos para Emiss'#227'o da NFe'
+          Caption = 'Pedidos para Emiss'#227'o da NFe/NFCe'
           object Label17: TLabel
             Left = 0
             Top = 248
@@ -643,8 +657,6 @@ object FrmNFE: TFrmNFE
         object TabSheet13: TTabSheet
           Caption = 'Informa'#231#245'es do(s) Pedido(s)'
           ImageIndex = 1
-          ExplicitLeft = -28
-          ExplicitTop = 30
           object Label9: TLabel
             Left = -1
             Top = -1
@@ -1239,11 +1251,13 @@ object FrmNFE: TFrmNFE
           item
             Expanded = False
             FieldName = 'Qtde'
+            ReadOnly = True
             Visible = True
           end
           item
             Expanded = False
             FieldName = 'Valor_Unitario'
+            ReadOnly = True
             Title.Caption = 'Valor Unit'#225'rio'
             Width = 88
             Visible = True
@@ -1251,18 +1265,21 @@ object FrmNFE: TFrmNFE
           item
             Expanded = False
             FieldName = 'dOUa'
+            ReadOnly = True
             Title.Caption = 'D. A'
             Visible = True
           end
           item
             Expanded = False
             FieldName = 'Desc_Acr'
+            ReadOnly = True
             Title.Caption = 'Valor Desc. Acr.'
             Visible = True
           end
           item
             Expanded = False
             FieldName = 'Sub_Total'
+            ReadOnly = True
             Title.Caption = 'Sub Total'
             Visible = True
           end
@@ -2388,7 +2405,7 @@ object FrmNFE: TFrmNFE
         Top = 0
         Width = 797
         Height = 436
-        ActivePage = Dados
+        ActivePage = TabSheet10
         Style = tsFlatButtons
         TabOrder = 0
         object TabSheet7: TTabSheet
@@ -2568,7 +2585,7 @@ object FrmNFE: TFrmNFE
       Left = 0
       Top = 38
       Cursor = crHandPoint
-      Caption = '&Gerar NFe'
+      Caption = '&Gerar '
       Enabled = False
       ImageIndex = 7
       Wrap = True
@@ -2581,7 +2598,7 @@ object FrmNFE: TFrmNFE
       Hint = 
         'Clique para enviar a NFe. Automaticamente ser'#225' validada e assina' +
         'da.'
-      Caption = '&Enviar NFe'
+      Caption = '&Enviar '
       Enabled = False
       ImageIndex = 7
       ParentShowHint = False
@@ -2593,7 +2610,7 @@ object FrmNFE: TFrmNFE
       Left = 0
       Top = 114
       Cursor = crHandPoint
-      Caption = '&Imprimir NFe'
+      Caption = '&Imprimir '
       Enabled = False
       ImageIndex = 7
       Wrap = True
@@ -2658,7 +2675,7 @@ object FrmNFE: TFrmNFE
     Left = 864
     Top = 16
     Bitmap = {
-      494C01010A000D000C0020002000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010A000D00100020002000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       00000000000036000000280000008000000060000000010020000000000000C0
       0000000000000000000000000000000000000000000080808000808080008080
       8000808080008080800080808000808080008080800080808000808080008080
@@ -4300,8 +4317,8 @@ object FrmNFE: TFrmNFE
   end
   object DataSource2: TDataSource
     DataSet = qryitens_nf
-    Left = 432
-    Top = 34
+    Left = 912
+    Top = 130
   end
   object qryitens_nf: TADOQuery
     Connection = DM.ADOConnection1
@@ -6162,8 +6179,8 @@ object FrmNFE: TFrmNFE
         'inner join Cadastro_Situacao_Tributaria CST4_7 on (RC7.Codigo_Si' +
         'tuacao_Tributaria = CST4_7.Codigo)'
       'where Pro.Codigo_Grupo_Tributacao_COFINS = :Grupo')
-    Left = 401
-    Top = 34
+    Left = 881
+    Top = 130
     object ADOQuery6Descricao_COFINS1: TStringField
       FieldName = 'Descricao_COFINS1'
       Size = 50

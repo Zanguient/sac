@@ -151,6 +151,8 @@ type
     BtnGerarNFCe: TButton;
     BtnEnviarNFCe: TButton;
     Label11: TLabel;
+    BtnEdita_Itens: TButton;
+    Label1: TLabel;
     procedure EdtDescontoExit(Sender: TObject);
     procedure EdtValor_RecebidoKeyPress(Sender: TObject; var Key: Char);
     procedure EdtDescontoKeyPress(Sender: TObject; var Key: Char);
@@ -186,6 +188,7 @@ type
     procedure EdtValorEnter(Sender: TObject);
     procedure BtnGerarNFCeClick(Sender: TObject);
     procedure BtnEnviarNFCeClick(Sender: TObject);
+    procedure BtnEdita_ItensClick(Sender: TObject);
   private
     { Private declarations }
     FFicahEstoques : TFichaEstoqueLista;
@@ -290,7 +293,7 @@ uses UPDV, UChama_Cliente, UDeclaracao, UChama_Tipo_Documento,
   URel_Carne,
   Util.GeradorDeCodigo, System.TypInfo, UGerar_Documentos, Util.Mensagens,
   Modelo.Dominio.Cliente.TClienteDominio, Conexao.TConexao,
-  DadosEmissaoNFERecebimento, UNFE;
+  DadosEmissaoNFERecebimento, UNFE, UEdita_Item_PDV;
 
 {$R *.dfm}
 
@@ -377,6 +380,15 @@ end;
 procedure TFrmFechamento_Venda_PDV.BuscaCondPagOutroForm(oCP: TCondicaoPagamentoEntidade);
 begin
   self.oCP := oCP;
+end;
+
+procedure TFrmFechamento_Venda_PDV.BtnEdita_ItensClick(Sender: TObject);
+begin
+  TLog.Debug('Clicou no botão Editar Itens.');
+  Application.CreateForm(TFrmEdita_Item_PDV, FrmEdita_Item_PDV);
+  Centraliza_Form(FrmEdita_Item_PDV);
+  Atualiza_Itens_NFe(FrmEdita_Item_PDV.qryitens_nf, FrmPDV.Conexao, StrToInt(LblCodigo.Caption));
+  FrmEdita_Item_PDV.Show;
 end;
 
 procedure TFrmFechamento_Venda_PDV.Calcula_Troco;
@@ -1690,7 +1702,7 @@ begin
   begin
     LblData_Pedido.Caption:= FrmNFE.qrypedido_pendenteData_Venda.AsString;
     LblN_Pedido.Caption:= FrmNFE.qrypedido_pendenteN_Pedido.AsString;
-    LblCodigo.Caption:= FrmNFE.qrypedido_pendenteCodigo.AsString;
+    LblCodigo.Caption:= FrmNFE.EdtCodigo_Pedido.Text;
 
     //if (FrmCarrega_Pedido_Caixa.qrycarrega_caixaTipo_Desc_Acr.AsString = '$') then
       //EdtDesconto.Text:= FloatToStr(Abs(FrmCarrega_Pedido_Caixa.qrycarrega_caixaDesc_Acr.AsFloat)) //'0';//FloatToStr(Abs(FrmCarrega_Pedido_Caixa.qrycarrega_caixaTotal_Desconto.AsFloat));
@@ -1838,6 +1850,7 @@ begin
       //PageControl1.TabIndex := 5;
       //PageControl2.TabIndex := 5;
       BtnGerarNFCe.Visible:= true;
+      BtnEdita_Itens.Visible:= true;
       BtnEnviarNFCe.Visible:= false;
       Abort;
     end;
@@ -1863,10 +1876,12 @@ begin
     dm.ACBrNFe1.Enviar(FrmPDV.LblNVenda.Caption, false);
     BtnEnviarNFCe.Visible:= false;
     BtnGerarNFCe.Visible:= false;
+    BtnEdita_Itens.Visible:= false;
   except on E:Exception do
   begin
     BtnEnviarNFCe.Visible:= false;
     BtnGerarNFCe.Visible:= true;
+    BtnEdita_Itens.Visible:= true;
     Application.MessageBox(PWideChar('Erro ao enviar NFCe: '+E.Message), 'Erro ao enviar NFCe', MB_ICONHAND+MB_OK);
     Abort;
   end;
@@ -1890,6 +1905,8 @@ end;
 procedure TFrmFechamento_Venda_PDV.GravaDadosBD;
 var
   FClienteDom: TClienteDominio;
+  qAux: TADOQuery;
+  Estoque: double;
 begin
   Pedido.Salva_Banco('S', 'I' , StrToInt(FrmPDV.LblCodigo.Caption), UDeclaracao.pedido, UDeclaracao.pre_venda,
   coo_cupom, coo_vin, UDeclaracao.ccf, FrmPDV.Codigo_Cliente, UDeclaracao.codigo_empresa,
@@ -1918,6 +1935,49 @@ begin
   TLog.Debug('Vai gerar dados para o financeiro.');
   Gera_Financeiro(FrmPDV.Conexao);
   TLog.Debug('Gerou dados para o financeiro.');
+  TLog.Debug('Variável gerar_estoque = '+IntToStr(gerar_estoque));
+
+  if (gerar_estoque = 0) then
+  begin
+    TLog.Debug('Vai atualizar o estoque. Vai fazer um loop até percorrer todos os produtos da grid.');
+    qAux := TADOQuery.Create(nil);
+    dm.qryitens_venda.First;
+    while not dm.qryitens_venda.Eof do
+    begin
+      if (dm.qryitens_vendaCancelado.AsString = 'N') then
+      begin
+        TLog.Debug('Vai abrir a query qAux com dados do produto atual na grid.');
+        TLog.Debug('Descrição do Produto: '+dm.qryitens_vendaDescricao.AsString+'. Código do Produto: '+dm.qryitens_vendaCodigo_Produto.AsString);
+        with qAux, SQL do
+        begin
+          close;
+          Connection := FrmPDV.Conexao;
+          clear;
+          add('select P.Codigo, P.Estoque, P.Valor_Medio, P.Valor_Compra, P.Volume from Produto P ');
+          Add('where Codigo = :Codigo');
+          Parameters.ParamByName('Codigo').Value:= dm.qryitens_vendaCodigo_Produto.AsInteger;
+          open;
+        end;
+
+        Estoque := qAux.FieldByName('Estoque').AsFloat - DM.qryitens_vendaQtde.AsFloat;
+        TLog.Debug('Estoque atual do produto: '+qAux.FieldByName('Estoque').AsString);
+        TLog.Debug('Quantidade vendida: '+DM.qryitens_vendaQtde.AsString);
+        TLog.Debug('Novo estoque: '+FloatToStr(Estoque));
+
+        Atualiza_Saldo_Estoque(FrmPDV.Conexao, qAux.FieldByName('Codigo').AsInteger, qAux.FieldByName('Valor_Compra').AsFloat * Estoque);
+        Atualiza_Estoque(FrmPDV.Conexao, Estoque, qAux.FieldByName('Codigo').AsInteger);
+        Atualiza_Volume(FrmPDV.Conexao, Estoque * qAux.FieldByName('Volume').AsFloat, qAux.FieldByName('Codigo').AsInteger);
+
+        AtualizaMD51(qAux.FieldByName('Codigo').AsInteger,
+          GeraMD5([DM.qryitens_vendaCodigo_Venda.AsString,
+          DM.qryitens_vendaDescricao.AsString,
+          FloatToStr(Estoque)]));
+      end;
+
+      dm.qryitens_venda.Next;
+    end;
+    TLog.Debug('Atualizou o estoque. Fez o loop e percorreu todos os itens da grid.');
+  end;
 
   Limpa_Dados_N_Pedido;
   TLog.Debug('Limpou dados pra próxima venda.');
@@ -2401,7 +2461,7 @@ begin
     begin
       LblFechamento.Caption:= 'Pagamento informado.';
       Application.MessageBox('Pagamento informado. Por favor, comande a geração e envio da NFe/NFCe.', 'Pagamento informado.', MB_OK+MB_ICONQUESTION);
-      Atualiza_Dados_Fechamento(dm.ADOConnection1, FrmNFE.qrypedido_pendenteCodigo.AsInteger);
+      Atualiza_Dados_Fechamento(dm.ADOConnection1, StrToInt(FrmNFE.EdtCodigo_Pedido.Text));
       Close;
     end;
   end

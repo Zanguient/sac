@@ -35,6 +35,10 @@ object FrmOS: TFrmOS
     TabOrder = 0
     object TabSheet1: TTabSheet
       Caption = 'Lan'#231'amento de DAV-OS'
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object LblData_Cadastro: TLabel
         Left = 1
         Top = 95
@@ -1001,6 +1005,10 @@ object FrmOS: TFrmOS
         object TabSheet4: TTabSheet
           Caption = 'Servi'#231'os do DAV-OS'
           ImageIndex = 2
+          ExplicitLeft = 0
+          ExplicitTop = 0
+          ExplicitWidth = 0
+          ExplicitHeight = 0
           object Label15: TLabel
             Left = 0
             Top = 1
@@ -2128,7 +2136,7 @@ object FrmOS: TFrmOS
     Width = 32
     Left = 400
     Bitmap = {
-      494C010109000C00B80220002000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010109000C00BC0220002000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       00000000000036000000280000008000000060000000010020000000000000C0
       0000000000000000000000000000000000000000000000000000000000000000
       00000000000000000000F8F7F900F9F7F700F9F9F900FBF8FA00000000000000

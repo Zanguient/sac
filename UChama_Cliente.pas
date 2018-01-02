@@ -157,25 +157,18 @@ begin
     FrmPDV.cli_tel := dm.qrychama_clienteTelefone.AsString;
     FrmPDV.cli_comp := dm.qryendereco_clienteComplemento.AsString;
 
-    FrmInformar_Cliente_PDV.EdtCodigo_Cliente.Text :=
-      dm.qrychama_clienteCodigo.AsString;
-    FrmInformar_Cliente_PDV.EdtNome.Text :=
-      dm.qrychama_clienteNome_Nome_Fantasia.AsString;
+    FrmInformar_Cliente_PDV.EdtCodigo_Cliente.Text := dm.qrychama_clienteCodigo.AsString;
+    FrmInformar_Cliente_PDV.EdtNome.Text := dm.qrychama_clienteNome_Nome_Fantasia.AsString;
 
     if (dm.qrychama_clienteTipo.AsString = 'FÍSICO') then
-      FrmInformar_Cliente_PDV.EdtCPF_CNPJ.Text :=
-        dm.qrychama_clienteCPF.AsString
+      FrmInformar_Cliente_PDV.EdtCPF_CNPJ.Text := dm.qrychama_clienteCPF.AsString
     else
-      FrmInformar_Cliente_PDV.EdtCPF_CNPJ.Text :=
-        dm.qrychama_clienteCNPJ.AsString;
+      FrmInformar_Cliente_PDV.EdtCPF_CNPJ.Text := dm.qrychama_clienteCNPJ.AsString;
 
-    FrmInformar_Cliente_PDV.EdtEndereco.Text :=
-      dm.qryendereco_clienteEndereco.AsString + ', ' +
-      dm.qryendereco_clienteNumero.AsString;
+    FrmInformar_Cliente_PDV.EdtEndereco.Text := dm.qryendereco_clienteEndereco.AsString + ', ' + dm.qryendereco_clienteNumero.AsString;
 
     FrmPDV.Tipo_Cliente := dm.qrychama_clienteTipo.AsString;
-    FrmPDV.Endereco := dm.qryendereco_clienteEndereco.AsString + ', ' +
-      dm.qryendereco_clienteNumero.AsString + ', Setor ' +
+    FrmPDV.Endereco := dm.qryendereco_clienteEndereco.AsString + ', ' + dm.qryendereco_clienteNumero.AsString + ', Setor ' +
       dm.qryendereco_clienteSetor.AsString;
 
     FrmChama_Cliente.close;

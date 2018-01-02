@@ -54,6 +54,10 @@ begin
     FrmPDV.oCli.EnderecoTexto:= EdtEndereco.Text;
   end;
 
+  razao_social_destinatario := EdtNome.Text;
+  cnpj_destinatario := EdtCPF_CNPJ.Text;
+  endereco_destinatario := EdtEndereco.Text;
+
   FrmPDV.AbreCupom;
   FrmPDV.LblStatus.Caption:= Caixa_Operacao(1);
   FrmPDV.Atualiza_Dados;

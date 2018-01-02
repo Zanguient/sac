@@ -158,12 +158,12 @@ object FrmPDV: TFrmPDV
     object Label1: TLabel
       Left = 8
       Top = 508
-      Width = 906
+      Width = 933
       Height = 13
       Caption = 
         '<F2>-Abre Cupom  <F3>-Buscar Produtos  <F4>-ADM.TEF  <F5>-Cap. B' +
-        'alan'#231'a  <F6>-Desc./Acr.  <F7>-Altera Tabela  <F8>-Cancela Item  ' +
-        '<F9>-Cupom Nominal'
+        'alan'#231'a  <F6>-Desc./Acr.  <F7>-Altera Tabela  <F9>-Cupom Nominal ' +
+        ' <Delete>-Remove Item'
       Color = clNavy
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindow
@@ -214,7 +214,7 @@ object FrmPDV: TFrmPDV
     object DBGrid1: TDBGrid
       Left = 232
       Top = 122
-      Width = 471
+      Width = 463
       Height = 320
       TabStop = False
       Anchors = [akLeft, akTop, akRight]

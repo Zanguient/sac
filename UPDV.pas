@@ -527,15 +527,16 @@ begin
   DadosEmissaoNFERecebimento:= TDadosEmissaoNFERecebimento.Create;
   Conexao:= TConexao.NovaConexao(Conexao);
   TConexao.IniciaQuerys([dm.qryitens_venda], Conexao);
-  Atualiza_Dados;
 
   Gera_Codigo_Lancamento(Conexao);
   LblCodigo.Caption:= IntToStr(UDeclaracao.Codigo);
   TLog.Debug('Gerou código do pedido ao gravar no banco de dados: '+LblCodigo.Caption);
 
-
   LblNVenda.Caption:= IntToStr(Gera_N_NFCe);
   TLog.Debug('Gerou número da NFCe: '+LblNVenda.Caption);
+
+  Atualiza_Dados;
+  TLog.Debug('Atualizou a grid.');
 
   EdtCodigo_Produto.SetFocus;
 end;
@@ -555,6 +556,7 @@ begin
   Panel1.Enabled:= true;
   LblStatus.Caption:= Caixa_Operacao(0);
   LblNVenda.Caption:= '';
+  n_item:= '0';
   libera_cancelar_item:= false;
   pode_chamar:= true;
   //ao finalizar uma venda, esses dois itens são afetados, pois o metodo Inicia_Itens é o primeor a ser chamado,
@@ -583,7 +585,6 @@ begin
       //dm.qryitens_venda_Aux.LogChanges:= false;
 
       //if not (dm.CDSItens_Venda.State in [dsEdit]) then
-      dm.qryitens_venda.Delete;
       //dm.qryitens_vendaCancelado.AsString:= 'S';
       //dm.qryitens_venda.Post;
 
@@ -600,6 +601,7 @@ begin
       LblSub_Total.Caption:= FormatFloat('#0.0,0', total);
       LblSub_Total.Caption:= StringReplace(LblSub_Total.Caption, ThousandSeparator, '', [rfReplaceAll]);
 
+      dm.qryitens_venda.Delete;
       //DadosEmissaoNFE.Itens.Delete(dm.qryitens_venda.RecNo-1);
       Atualiza_Dados;
 
@@ -1187,12 +1189,6 @@ begin
       abort;
     end;
 
-    {if (dm.qryitens_vendaCancelado.AsString = 'S') then
-    begin
-      Item_Ja_Cancelado;
-      abort;
-    end;}
-
     Atualiza_Itens;
   end;
 end;
@@ -1541,7 +1537,8 @@ begin
       DadosEmissaoNFEItens.CFOP:= dm.qryitens_vendaCFOP.AsString;
       DadosEmissaoNFEItens.Unidade:= dm.qryitens_vendaUN.AsString;
       DadosEmissaoNFEItens.Quantidade:= dm.qryitens_vendaQtde.AsFloat;
-      DadosEmissaoNFEItens.ValorOriginal:= dm.qryitens_vendaValor_Original.AsFloat;
+      DadosEmissaoNFEItens.ValorUnitario:= dm.qryitens_vendaValor_Unitario.AsFloat;
+      DadosEmissaoNFEItens.ValorOriginal:= dm.qryitens_vendaValor_Unitario.AsFloat;
       DadosEmissaoNFEItens.ValorFrete:= 0;
       DadosEmissaoNFEItens.ValorSeguro:= 0;
       DadosEmissaoNFEItens.DouA:= dm.qryitens_vendadOUa.AsString;
@@ -2228,7 +2225,7 @@ begin
   Verifica_Edit_Branco(EdtValor_Unitario);
   Verifica_Valor_Negativo(StrToFloat(EdtValor_Unitario.Text), EdtValor_Unitario);
 
-  if ( StrToFloat(EdtValor_Unitario.Text) <> 0) then
+  {if ( StrToFloat(EdtValor_Unitario.Text) <> 0) then
   begin
     novo_valor_uni:= StrToFloat(EdtValor_Unitario.Text);
     total_valor_uni:= novo_valor_uni - var_uni;
@@ -2241,7 +2238,7 @@ begin
 
     EdtValor_Unitario.Text:= FormatFloat('#0.0,0', var_uni);
     EdtValor_Unitario.Text:= StringReplace(EdtValor_Unitario.Text, ThousandSeparator, '', [rfReplaceAll]);
-  end;
+  end;}
 
   //EdtQuantidade.SetFocus;
 end;
@@ -2452,7 +2449,7 @@ begin
 
   if (key = vk_f8) then
   begin
-    if (Iniciado) and (LblSub_Total.Caption <> '0,00') then
+    {if (Iniciado) and (LblSub_Total.Caption <> '0,00') then
     begin
       Application.CreateForm(TFrmSenha_ADM, FrmSenha_ADM);
       FrmSenha_ADM.ShowModal;
@@ -2471,7 +2468,7 @@ begin
     begin
       TMensagens.MensagemWarning('Para cancelar um item, é necessário ter pelo menos um item lançado e não cancelado.');
       abort;
-    end;
+    end;}
   end;
 
   if (key = vk_f12) then
@@ -2867,15 +2864,17 @@ begin
     //if (ECF.Vende_Item(scodigo, sdescricao, aliquotacupom, sqtde, svalor, sdesc_acr, sTipo, unid_med, dOUa)) then
     //begin
       valor_total:= StrToFloat(LblSub_Total.Caption);
-      v_un:= novo_valor_uni;
+      //v_un:= novo_valor_uni;
+      v_un:= StrToFloat(EdtValor_Unitario.Text);
       qtde:= StrToFloat(EdtQuantidade.Text);
 
-      if (dOUa = 'A') then
+      {if (dOUa = 'A') then
         real:= ((var_uni * qtde) + (total_valor_uni * qtde))
       else
-        real:= ((var_uni * qtde) - (total_valor_uni * qtde));
+        real:= ((var_uni * qtde) - (total_valor_uni * qtde)); }
 
-      total:= Calcula_Valor(FloatToStr(real));
+      //total:= Calcula_Valor(FloatToStr(real));
+      total:= v_un * qtde;
       //total:= Trunc(real * 100) / 100;
 
       //LblTotal.Caption:= FloatToStr(total);
@@ -2893,7 +2892,7 @@ begin
         Calcula_Imposto_Servico;
 
       //ECF.Pega_Ultimo_Item;
-
+      n_item:= IntToStr( StrToInt(n_item) + 1);
       TLog.Info('--- CÁLCULAR IMPOSTOS PDV ---');
       TLog.Debug('Iniciou objeto FTributacaoEntidade.');
       FTributacaoEntidade:= TTributacaoEntidade.Create;
@@ -2903,7 +2902,8 @@ begin
       FTributacaoEntidade:= FTributacaoDominio.CalculaICMS(StrToFloat(EdtValor_Total.Text), StrToFloat(br_icms), AliquotaImposto, uf, uf);
       TLog.Info('--- FIM CÁLCULAR IMPOSTOS PDV ---');
 
-      Itens_Pedido.Salva_Banco(Conexao, 'S', 'I', StrToInt(LblCodigo.Caption), UDeclaracao.n_item, cod_produto,
+      TLog.Debug('Vai salvar o produto '+LblProduto.Caption+' no BD.');
+      Itens_Pedido.Salva_Banco(Conexao, 'S', 'I', StrToInt(LblCodigo.Caption), n_item, cod_produto,
       EdtCodigo_Produto.Text, LblProduto.Caption, LblNCM.Caption, origem,
       LblCFOP.Caption, unid_med, tipo_calculo_bc_icms, tipo_recolhimento_icms, saliquota, cst_icms, csosn, //icms, cst_icms, csosn,
       br_icms, FloatToStr(FTributacaoEntidade.BaseCalculo), FloatToStr(FTributacaoEntidade.ValorICMS), tipo_calculo_bc_icms_st, '0', '0', '0', '0',
@@ -2913,6 +2913,7 @@ begin
       StrToFloat(EdtQuantidade.Text), 0, 0, 0, FrmPDV.valor_compra,
       FrmPDV.var_uni, StrToFloat(FrmPDV.EdtValor_Unitario.Text), 0, 0, '$', dOUa, 0, 0, 0, StrToFloat(FrmPDV.EdtValor_Total.Text),
       StrToFloat(sub_total_liquido), 'N', 'S', date, '', '', 'A', comissao_ven, 0, 0, permite_credito, codigo_obs_fiscal, qtde_estoque, FrmPDV.valor_compra_nota);
+      TLog.Debug('Salvou o produto '+LblProduto.Caption+' no BD.');
 
       {DadosEmissaoNFEItens:= TDadosEmissaoNFEItens.Create;
       DadosEmissaoNFEItens.NCM:= LblNCM.Caption;
@@ -3003,7 +3004,7 @@ begin
     add('select * from Itens_Pedido where Codigo = :Codigo');
     Parameters.ParamByName('Codigo').Value:= StrToInt(LblCodigo.Caption);
     open;
-    Last;
+    //Last;
   end;
 end;
 

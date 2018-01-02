@@ -4108,31 +4108,38 @@ begin
   //end
   //else
   //begin
-  if (Imp_Fiscal_Escolhida = 'BEMATECH') then
+  {if (ImpNFModelo = 'BEMATECH') then
   begin
     dm.ACBrPosPrinter1.Modelo:= ppEscBematech;
-    TLog.Debug('Impressora fiscal escolhida: ' + Imp_Fiscal_Escolhida);
+    TLog.Debug('Impressora fiscal escolhida: ' + ImpNFModelo);
   end;
 
-  if (Imp_Fiscal_Escolhida = 'DARUMA') then
+  if (ImpNFModelo = 'DARUMA') then
   begin
     dm.ACBrPosPrinter1.Modelo:= ppEscDaruma;
-    TLog.Debug('Impressora fiscal escolhida: ' + Imp_Fiscal_Escolhida);
+    TLog.Debug('Impressora fiscal escolhida: ' + ImpNFModelo);
   end;
 
-  if (Imp_Fiscal_Escolhida = 'ELGIN') then
+  if (ImpNFModelo = 'ELGIN') then
   begin
     dm.ACBrPosPrinter1.Modelo:= ppEscElgin;
-    TLog.Debug('Impressora fiscal escolhida: ' + Imp_Fiscal_Escolhida);
+    TLog.Debug('Impressora fiscal escolhida: ' + ImpNFModelo);
   end;
 
-  if (Imp_Fiscal_Escolhida = 'TEXTO') then
+  if (ImpNFModelo = 'EPSON') then
+  begin
+    dm.ACBrPosPrinter1.Modelo:= ppEscEpsonP2;
+    TLog.Debug('Impressora fiscal escolhida: ' + ImpNFModelo);
+  end;
+
+  if (ImpNFModelo = 'TEXTO') then
   begin
     dm.ACBrPosPrinter1.Modelo:= ppTexto;
-    TLog.Debug('Impressora fiscal escolhida: ' + Imp_Fiscal_Escolhida);
+    TLog.Debug('Impressora fiscal escolhida: ' + ImpNFModelo);
   end;
 
-  dm.ACBrPosPrinter1.Porta:= porta_ecf;
+  dm.ACBrPosPrinter1.Porta:= ImpNFPorta;}
+  Conecta_ImpressoraNF;
   Habilitado:= true;
   Reducao:= false;
   //end;

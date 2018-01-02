@@ -52,7 +52,7 @@ begin
     begin
       if (Confirma_Exclusao) then
       begin
-        ECF.Cancela_Item(StrToInt(item_cancelamento));
+        //ECF.Cancela_Item(StrToInt(item_cancelamento));
 
         if (dm.qryitens_venda.Locate('Codigo;N_Item', VarArrayOf([FrmPDV.LblCodigo.Caption, item_cancelamento]), [])) then
         begin
@@ -61,7 +61,7 @@ begin
           dm.qryitens_venda.Post;
         end;
 
-        if (dm.qryr05.Locate('N_Pedido;N_Item', VarArrayOf([FrmPDV.LblCodigo.Caption, item_cancelamento]), [])) then
+        {if (dm.qryr05.Locate('N_Pedido;N_Item', VarArrayOf([FrmPDV.LblCodigo.Caption, item_cancelamento]), [])) then
         begin
           dm.qryr05.Edit;
           dm.qryr05Cancelamento.AsString:= 'S';
@@ -70,7 +70,7 @@ begin
           valor_cancelado:= dm.qryitens_vendaQtde.AsFloat * dm.qryitens_vendaValor_Unitario.AsFloat;
           dm.qryr05Valor_Cancelado.AsString:= FloatToStr(valor_cancelado);
           dm.qryr05.Post;
-        end;
+        end; }
 
         sub1:= StrToFloat(FrmPDV.LblSub_Total.Caption);
         sub2:= dm.qryitens_vendaSub_Total.AsFloat;
